@@ -3,5 +3,6 @@ A# (A Sharp)
 
 Music Visualizer for CS4621
 
-# Group Memebers:
+# Group Members:
 - Zachary Zimmerman
+- Emre Fındık
