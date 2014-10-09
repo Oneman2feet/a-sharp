@@ -1,0 +1,100 @@
+\documentclass{article}
+\usepackage[top=1.2in, bottom=1in, left=2in, right=2in]{geometry}
+\usepackage{enumerate, multicol}
+\usepackage{amsmath}
+\usepackage{parskip}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+
+\textsc{\LARGE Cornell University}\\[1.5cm]
+
+\textsc{\Large CS 4621 Practicum Project Proposal}\\[0.5cm]
+
+% Title
+\HRule \\[0.4cm]
+{ \huge \bfseries A$^\sharp$ -- Music Visualizer \\[0.4cm] }
+
+\HRule \\[1.5cm]
+
+% Group members
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+Shane \textsc{Moore} \\
+\emph{swm85}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+Zachary \textsc{Zimmerman} \\
+\emph{ztz3}
+\end{flushright}
+\end{minipage}
+\par\vspace{0.5cm}
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+Emre \textsc{Fındık} \\
+\emph{ef343}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+Joseph \textsc{Vinegrad} \\
+\emph{jav86}
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+% Bottom of the page
+{\large October 9, 2014}
+
+\end{center}
+
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Summary}
+
+Music Visualizer overview
+
+\section{Software description}
+
+\begin{itemize}
+	\item Application that takes a song file and outputs a video file to accompany it
+	\item We should think about this, maybe we want to input a song, have it do preprocessing, and then immediately play the video?
+	\item Perhaps also take midi input as a warmup (this is a good idea)
+\end{itemize}
+
+\section{Application in Graphics}
+
+Two areas that we’ll cover and graphics techniques that we’ll use (video rendering)
+
+\section{Software Architecture}
+
+Code in python
+Modules
+Sound file analyzation
+Model for representing different parts of sound
+Timbre, key/”emotion”, amplitude
+Controller acts as abstraction layer between model and view
+View (graphical representation)
+Software representation of the visualizer
+Renderer
+Actually render (and play?) the video of the visualization
+
+Also breakdown of work
+
+\section{Milestone}
+
+What we’ll have completed for the milestone
+
+Proof of concept - getting data from sound file and outputting it in some manner
+Basic Architecture
+
+\end{document}
