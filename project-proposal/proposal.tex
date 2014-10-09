@@ -63,7 +63,7 @@ Joseph \textsc{Vinegrad} \\
 
 Our group proposes to create a music visualizer called A$\sharp$ (A Sharp) which goes beyond the interpretive scope of current visualization software.  We find that the typical music visualization does fine at looking good alongside the music, but fails to go beyond and provide actual interpretation or insight into the song.
 
-As Edward Tufte said in his book \textit{The Visual Display of Quantitative Information}, ``At their best, graphics are instruments for reasoning about quantitative information'' (Introduction).  The job of a music visualizer, therefore, is to provide the user with enough visual information to interpret, on a higher level, the characteristics of the sound which is being visualized.  If possible, the visualization could be considered a summary of the song, and even a crude alternative.
+As Edward Tufte said in his book \textit{The Visual Display of Quantitative Information}, ``At their best, graphics are instruments for reasoning about quantitative information'' (Introduction).  The job of a music visualizer, therefore, is to provide the user with enough relevant and useful and visual information that they may interpret, on a higher level, the characteristics of the sound which is being visualized.  If possible, the visualization could be considered a summary of the song, and even a rudimentary alternative.
 
 We plan to work towards this standard in our music visualizer, A$\sharp$.
 
@@ -85,7 +85,7 @@ Code in python
 Modules
 Sound file analyzation
 Model for representing different parts of sound
-Timbre, key/”emotion”, amplitude
+Timbre, key/``emotion'', amplitude
 Controller acts as abstraction layer between model and view
 View (graphical representation)
 Software representation of the visualizer
@@ -94,11 +94,30 @@ Actually render (and play?) the video of the visualization
 
 Also breakdown of work
 
+\subsection{Properties of Music for Quantification}
+
+\begin{itemize}
+	\item Song genre
+	\item Amplitude at a given frequency
+	\item Sound location (stereo)
+	\item Sound quality (Hilbert scope)
+	\item Tremolo
+	\item Centroid, spread, skewness and kurtosis (of an amplitude envelope)
+	\item Mel-frequency cepstrum
+	\item Rhythm complexity
+	\item Distinguish accompaniment from melody
+	\item Melody: pitch, volume, position in chord
+\end{itemize}
+
 \section{Milestone}
 
-What we’ll have completed for the milestone
+By the milestone, our group hopes to have the following as part of a proof of concept:
 
-Proof of concept - getting data from sound file and outputting it in some manner
-Basic Architecture
+\begin{itemize}
+	\item Warmup: midi support, later on, wav support
+	\item Working interfaces for each of the sound libraries we choose to use
+	\item Integration of data from all of the libraries into one format
+	\item A rudimentary visual representing every meaningful piece of insight we can glean from the music
+\end{itemize}
 
 \end{document}
