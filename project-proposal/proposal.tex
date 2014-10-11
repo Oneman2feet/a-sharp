@@ -63,13 +63,11 @@ Joseph \textsc{Vinegrad} \\
 
 Our group proposes to create a music visualizer called A$\sharp$ (A Sharp) which goes beyond the interpretive scope of current visualization software.  We find that the typical music visualization does fine at looking good alongside the music, but fails to go beyond and provide actual interpretation or insight into the song.
 
-As Edward Tufte said in his book \textit{The Visual Display of Quantitative Information}, ``At their best, graphics are instruments for reasoning about quantitative information'' (Introduction).  The job of a music visualizer, therefore, is to provide the user with enough relevant and useful and visual information that they may interpret, on a higher level, the characteristics of the sound which is being visualized.  If possible, the visualization could be considered a summary of the song, and even a rudimentary alternative.
-
-We plan to work towards this standard in our music visualizer, A$\sharp$.
+As Edward Tufte said in his book \textit{The Visual Display of Quantitative Information}, ``At their best, graphics are instruments for reasoning about quantitative information'' (Introduction).  The job of a music visualizer, therefore, is to provide the user with enough relevant and useful visual information that they may interpret, on a higher level, the characteristics of the sound which is being visualized.  If possible, the visualization could be considered a summary of the song, or even a rudimentary alternative.  We plan to work towards this standard in our music visualizer, A$\sharp$.
 
 \section{Software description}
 
-The software we are planning to create will output a video file, given an audio file input. The visuals in the video file will be built upon not only instantaneous properties of the audio but will also be dependent upon qualities such as tempo, rhythm progressions and the musical genre, which requires analyses of the audio as a whole or in parts. Each of these audio qualities will be linked to a specific visual quality in the video file, such as the color properties (hue, saturation etc.) and the output shape.
+The software we are planning to create will output a video file, given an audio file input. The visuals in the video file will be built upon not only instantaneous properties of the audio but will also be dependent upon qualities such as tempo, rhythm progressions and the musical genre, which requires analyses of the audio as a whole or in greater parts. Each of these audio qualities will be linked to a specific visual quality in the video file, such as the color properties (hue, saturation etc.) and the output shape.
 
 \section{Application in Graphics}
 
@@ -79,22 +77,7 @@ Given our goal of creating complex visual displays that accurately reflect diffe
  
 Animation is another major area of focus for our project, as we aim to produce a dynamic moving display for our visualizer. To enhance the design and versatility of our visualizer, we will utilize different animation patterns corresponding to different types of music. To implement these, we will apply techniques related to both linear and nonlinear transformations (in 2D and 3D), as well as optimizations for seamlessly animating frame by frame. While we haven't yet discussed animation in class, we are scheduled to do so shortly before our first milestone, giving us time to incorporate animation techniques thereafter.
 
-\section{Software Architecture}
-
-Code in python
-Modules
-Sound file analyzation
-Model for representing different parts of sound
-Timbre, key/``emotion'', amplitude
-Controller acts as abstraction layer between model and view
-View (graphical representation)
-Software representation of the visualizer
-Renderer
-Actually render (and play?) the video of the visualization
-
-Also breakdown of work
-
-\subsection{Properties of Music for Quantification}
+\section{Properties of Music for Quantification}
 
 \begin{itemize}
 	\item Song genre
@@ -108,6 +91,53 @@ Also breakdown of work
 	\item Distinguish accompaniment from melody
 	\item Melody: pitch, volume, position in chord
 \end{itemize}
+
+\section{Software Architecture}
+
+Our code will be broken up into four modules, which each represent a specific part of the program. They are laid out as follows: \\
+
+\begin{enumerate}
+	\item Data collection / statistical analysis (input $\rightarrow$ data)
+	\begin{itemize}
+		\item Takes in sound file
+		\item Runs library calls for music analysis
+		\item Returns the results of all analyses in the formats of the respective libraries
+	\end{itemize}
+	\item Data formatting (data $\rightarrow$ models)
+	\begin{itemize}
+		\item Takes in the raw analysis data
+		\item Formats it all in a sensible way
+		\item Returns the data in the cleaner protocol
+	\end{itemize}
+	\item Data interpretation (controller: models $\rightarrow$ views)
+	\begin{itemize}
+		\item Takes in the clean data
+		\item Interprets it in new (i.e. unique to our project) ways
+		\item Returns a property-based representation of the visualization
+	\end{itemize}
+	\item Rendering (views $\rightarrow$ output)
+	\begin{itemize}
+		\item Takes in the parameters of the visualization
+		\item Creates the scene based on these parameters given
+		\item Animates based on the parameters with respect to time
+		\item Returns the video
+	\end{itemize}
+\end{enumerate}
+
+The first module will perform some primary analyzation of the sound file that's been passed to the software. This will include attempts to determine the key and tempo of the piece, variations (and base-levels) of volume, and spectral analysis for some understanding of the instrumentation being used. Data from the analysis will be stored in the next module; a series of models that will be designed for fast access and calculations necessary for our representations of the piece.
+	A controller will act as an interface between the models and views, which will store data about the visual representation itself. A final module, the renderer, will take these software representations of the animation (the views), and produce a video to accompany the song.
+
+We plan on using python for coding this project, with a few third-party libraries for the sound analysis module.
+
+\section{Work Distribution}
+
+\paragraph{Emre:} Sound file analysis (\oldstylenums{1}) and model for representation of sound (\oldstylenums{2})
+\vspace{-0.5cm}
+\paragraph{Shane:} Model design (\oldstylenums{2}) and controllers (\oldstylenums{3})
+\vspace{-0.5cm}
+\paragraph{Zachary:} Sound data interpretation (\oldstylenums{3}) and visualization design (\oldstylenums{4})
+\vspace{-0.5cm}
+\paragraph{Joey:} Graphical representation of the view and rendering (\oldstylenums{4})
 
 \section{Milestone}
 
