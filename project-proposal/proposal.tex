@@ -69,11 +69,7 @@ We plan to work towards this standard in our music visualizer, A$\sharp$.
 
 \section{Software description}
 
-\begin{itemize}
-	\item Application that takes a song file and outputs a video file to accompany it
-	\item We should think about this, maybe we want to input a song, have it do preprocessing, and then immediately play the video?
-	\item Perhaps also take midi input as a warmup (this is a good idea)
-\end{itemize}
+The software we are planning to create will output a video file, given an audio file input. The visuals in the video file will be built upon not only instantaneous properties of the audio but will also be dependent upon qualities such as tempo, rhythm progressions and the musical genre, which requires analyses of the audio as a whole or in parts. Each of these audio qualities will be linked to a specific visual quality in the video file, such as the color properties (hue, saturation etc.) and the output shape.
 
 \section{Application in Graphics}
 
@@ -81,7 +77,7 @@ The graphics portion of our project will focus primarily on rendering and animat
  
 Given our goal of creating complex visual displays that accurately reflect different types of music, rendering will be a key component of our work. We will likely want to incorporate a variety of shapes, textures, and lighting. In order to accomplish this, we will apply techniques such as texture mapping and shading (under various models). Additionally, our scenes will probably consist of several objects on the screen simultaneously. To account for this, we will need to use ray tracing techniques to determine relative positions of objects. Still, determining what combination of objects and shading models to use for different songs remains a challenge.
  
-Animation is another major area of focus for our project, as we aim to produce a dynamic moving display for our visualizer. To enhance the design and versatility of our visualizer, we will utilize different animation patterns corresponding to different types of music. To implement these, we will apply techniques related to both linear and nonlinear transformations (in 2D and 3D), as well as optimizations for seamlessly animating frame by frame. While we haven’t yet discussed animation in class, we are scheduled to do so shortly before our first milestone, giving us time to incorporate animation techniques thereafter.
+Animation is another major area of focus for our project, as we aim to produce a dynamic moving display for our visualizer. To enhance the design and versatility of our visualizer, we will utilize different animation patterns corresponding to different types of music. To implement these, we will apply techniques related to both linear and nonlinear transformations (in 2D and 3D), as well as optimizations for seamlessly animating frame by frame. While we haven't yet discussed animation in class, we are scheduled to do so shortly before our first milestone, giving us time to incorporate animation techniques thereafter.
 
 \section{Software Architecture}
 
