@@ -67,7 +67,9 @@ As Edward Tufte said in his book \textit{The Visual Display of Quantitative Info
 
 \section{Software description}
 
-The software we are planning to create will output a video file, given an audio file input. The visuals in the video file will be built upon not only instantaneous properties of the audio but will also be dependent upon qualities such as tempo, rhythm progressions and the musical genre, which requires analyses of the audio as a whole or in greater parts. Each of these audio qualities will be linked to a specific visual quality in the video file, such as the color properties (hue, saturation etc.) and the output shape.
+The software we are planning to create will play an animation, given an audio file input. The visuals in the animation will be built upon not only instantaneous properties of the audio but will also be dependent upon qualities such as tempo, rhythm progressions and the musical genre, which requires analyses of the audio as a whole or in greater parts. Each of these audio qualities will be linked to a specific visual quality in the animation, such as the color properties (hue, saturation etc.) and the output shape.
+
+The visualization itself will be a single sphere in the center of the screen, whose properties will change based on temporal changes in various components of the music. Most notably, displacement shaders will be used to adjust the surface texture of the sphere, allowing it to have a drastically different shape if necessary (e.g. long, varied spikes). Through manipulation of the shaders over time, using splines, we will be able to create an animation that accurately represents the music being listened to.
 
 \section{Application in Graphics}
 
@@ -97,30 +99,29 @@ Animation is another major area of focus for our project, as we aim to produce a
 Our code will be broken up into four modules, which each represent a specific part of the program. They are laid out as follows: \\
 
 \begin{enumerate}
-	\item Data collection / statistical analysis (input $\rightarrow$ data)
+	\item Data collection / statistical analysis
 	\begin{itemize}
 		\item Takes in sound file
 		\item Runs library calls for music analysis
 		\item Returns the results of all analyses in the formats of the respective libraries
 	\end{itemize}
-	\item Data formatting (data $\rightarrow$ models)
+	\item Data formatting (models)
 	\begin{itemize}
 		\item Takes in the raw analysis data
-		\item Formats it all in a sensible way
-		\item Returns the data in the cleaner protocol
+		\item Create appropriate data structure for graphical representation
+		\begin{itemize}
+			\item Includes generating shaders and splines based input data 
+		\end{itemize}
 	\end{itemize}
-	\item Data interpretation (controller: models $\rightarrow$ views)
+	\item Controller
 	\begin{itemize}
-		\item Takes in the clean data
-		\item Interprets it in new (i.e. unique to our project) ways
-		\item Returns a property-based representation of the visualization
+		\item Acts as a layer of abstraction between the model and view
+		\item Runs the rendering engine
 	\end{itemize}
-	\item Rendering (views $\rightarrow$ output)
+	\item View
 	\begin{itemize}
-		\item Takes in the parameters of the visualization
-		\item Creates the scene based on these parameters given
-		\item Animates based on the parameters with respect to time
-		\item Returns the video
+		\item The rendering/animation engine
+		\item Given the shaders and splines, plays the animation of the sphere
 	\end{itemize}
 \end{enumerate}
 
