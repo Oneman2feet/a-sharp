@@ -71,10 +71,12 @@ def on_resize(width, height):
     return pyglet.event.EVENT_HANDLED
 
 def update(dt):
-    global rx, ry, rz
+    global rx, ry, rz, tx, ty
     rx += dt * 1
     ry += dt * 80
     rz += dt * 30
+    tx = 3 * sin(rx * 10) * sin(rx / 2)
+    ty = 3 * cos(rx * 10) * cos(rx / 2)
     rx %= 360
     ry %= 360
     rz %= 360
@@ -84,7 +86,7 @@ pyglet.clock.schedule(update)
 def on_draw():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
-    glTranslatef(0, 0, -4)
+    glTranslatef(tx, ty, -6)
     glRotatef(rz, 0, 0, 1)
     glRotatef(ry, 0, 1, 0)
     glRotatef(rx, 1, 0, 0)
