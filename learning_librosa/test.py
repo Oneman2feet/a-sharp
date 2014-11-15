@@ -1,26 +1,24 @@
 import sys
+import argparse
 import numpy as np
 import librosa
 
-debug = True
-
 # use filename=librosa.util.example_audio_file() for an example
-def load_song(filename):
-  if (debug):
-    print "About to load sound file %s" % filename
-
-  y, sr = librosa.load(filename)
-
-  if (debug):
-    print "Successfully loaded file."
-
+def load_song(filename, d):
+  print "About to load sound file %s" % filename
+  y, sr = librosa.load(filename, duration=d)
+  print "Successfully loaded file."
   return y, sr
 
+def separate_fg_and_bg(y):
+  return librosa.effects.hpss(y)
+
 if __name__=='__main__':
-  if (len(sys.argv)==1):
-    print "No path to sound file provided."
-  else:
-    load_song(sys.argv[1])
+  parser = argparse.ArgumentParser(description='Process a sound file.')
+  parser.add_argument('filename', type=str, help='the path to the sound file')
+  parser.add_argument('-d', dest='duration', type=float, help='specify the duration of the sound file to be analyzed')
+  args = parser.parse_args()
+  load_song(args.filename, args.duration)
 
 
 #######################################################################################
