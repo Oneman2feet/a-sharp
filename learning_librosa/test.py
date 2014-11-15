@@ -1,45 +1,67 @@
-# Feature extraction example
-
+import sys
 import numpy as np
 import librosa
 
-# Load the example clip
-y, sr = librosa.load(librosa.util.example_audio_file())
+debug = True
 
-# Separate harmonics and percussives into two waveforms
-y_harmonic, y_percussive = librosa.effects.hpss(y)
+# use filename=librosa.util.example_audio_file() for an example
+def load_song(filename):
+  if (debug):
+    print "About to load sound file %s" % filename
 
-# Set the hop length
-hop_length = 64
+  y, sr = librosa.load(filename)
 
-# Beat track on the percussive signal
-tempo, beat_frames = librosa.beat.beat_track(y=y_percussive,
-                                             sr=sr,
-                                             hop_length=hop_length)
+  if (debug):
+    print "Successfully loaded file."
 
-# Compute MFCC features from the raw signal
-mfcc = librosa.feature.mfcc(y=y, sr=sr, hop_length=hop_length, n_mfcc=13)
+  return y, sr
 
-# And the first-order differences (delta features)
-mfcc_delta = librosa.feature.delta(mfcc)
+if __name__=='__main__':
+  if (len(sys.argv)==1):
+    print "No path to sound file provided."
+  else:
+    load_song(sys.argv[1])
 
-# Stack and synchronize between beat events
-# This time, we'll use the mean value (default) instead of median
-beat_mfcc_delta = librosa.feature.sync(np.vstack([mfcc, mfcc_delta]),
-                                       beat_frames)
 
-# Compute chroma features from the harmonic signal
-chromagram = librosa.feature.chromagram(y=y_harmonic,
-                                        sr=sr,
-                                        hop_length=hop_length)
+#######################################################################################
 
-# Aggregate chroma features between beat events
-# We'll use the median value of each feature between beat frames
-beat_chroma = librosa.feature.sync(chromagram,
-                                   beat_frames,
-                                   aggregate=np.median)
+def test():
+  # Separate harmonics and percussives into two waveforms
+  y_harmonic, y_percussive = librosa.effects.hpss(y)
 
-# Finally, stack all beat-synchronous features together
-beat_features = np.vstack([beat_chroma, beat_mfcc_delta])
+  # Set the hop length
+  hop_length = 64
 
-print beat_features
+  # Beat track on the percussive signal
+  tempo, beat_frames = librosa.beat.beat_track(y=y_percussive,
+                                               sr=sr,
+                                               hop_length=hop_length)
+
+  print "Tempo: %0.2f" % tempo
+
+  # Compute MFCC features from the raw signal
+  mfcc = librosa.feature.mfcc(y=y, sr=sr, hop_length=hop_length, n_mfcc=13)
+
+  # And the first-order differences (delta features)
+  mfcc_delta = librosa.feature.delta(mfcc)
+
+  # Stack and synchronize between beat events
+  # This time, we'll use the mean value (default) instead of median
+  beat_mfcc_delta = librosa.feature.sync(np.vstack([mfcc, mfcc_delta]),
+                                         beat_frames)
+
+  # Compute chroma features from the harmonic signal
+  chromagram = librosa.feature.chromagram(y=y_harmonic,
+                                          sr=sr,
+                                          hop_length=hop_length)
+
+  # Aggregate chroma features between beat events
+  # We'll use the median value of each feature between beat frames
+  beat_chroma = librosa.feature.sync(chromagram,
+                                     beat_frames,
+                                     aggregate=np.median)
+
+  # Finally, stack all beat-synchronous features together
+  beat_features = np.vstack([beat_chroma, beat_mfcc_delta])
+
+  print beat_features
