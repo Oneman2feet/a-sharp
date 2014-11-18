@@ -1,7 +1,14 @@
 import sys
 import argparse
-import numpy as np
 import librosa
+#import numpy as np
+
+# matplotlib for displaying the output
+#import matplotlib.pyplot as plt
+#%matplotlib inline
+
+# and IPython.display for audio output
+#import IPython.display
 
 # use filename=librosa.util.example_audio_file() for an example
 def load_song(filename, d):
@@ -18,15 +25,22 @@ if __name__=='__main__':
   parser.add_argument('filename', type=str, help='the path to the sound file')
   parser.add_argument('-d', dest='duration', type=float, help='specify the duration of the sound file to be analyzed')
   args = parser.parse_args()
-  load_song(args.filename, args.duration)
+
+  y, sr = load_song(args.filename, args.duration)
+  D = np.abs(librosa.stft(y))
+  print "about to display"
+  librosa.display.specshow(D, sr=sr, y_axis='linear')
+  print "done"
+
+  # Separate harmonics and percussives into two waveforms
+  #H, P = librosa.effects.hpss(D)
+
 
 
 #######################################################################################
 
 def test():
-  # Separate harmonics and percussives into two waveforms
-  y_harmonic, y_percussive = librosa.effects.hpss(y)
-
+  
   # Set the hop length
   hop_length = 64
 
