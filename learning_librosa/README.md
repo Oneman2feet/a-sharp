@@ -7,4 +7,4 @@ LibROSA Installation Instructions
 
 3.  You're also going to want to get ```scikits.samplerate``` for better performance.
 
-    a. On my mac with homebrew, I got away with ``brew install libsamplerate``` and then ```pip install scikits.samplerate```.
+    a. On my mac with homebrew, I got away with ``brew install libsamplerate``` and then ```pip install scikits.samplerate```
