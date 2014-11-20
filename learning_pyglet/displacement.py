@@ -9,7 +9,7 @@ pyglet.resource.reindex()
 
 try:
     # Try and create a window with multisampling (antialiasing)
-    config = Config(sample_buffers=1, samples=4, 
+    config = Config(sample_buffers=1, samples=4,
                     depth_size=16, double_buffer=True,)
     window = pyglet.window.Window(resizable=True, config=config)
 except pyglet.window.NoSuchConfigException:
@@ -29,13 +29,12 @@ def on_resize(width, height):
 
 
 def update(dt):
-    global rx, ry, rz, tx, ty
-    rx += dt * 1
+    global ry, total_time, bps, bump
+    total_time += dt
+    total_time %= bps
     ry += dt * 80
-    rz += dt * 30
-    rx %= 360
     ry %= 360
-    rz %= 360
+    bump = abs(total_time - bps/2)
 pyglet.clock.schedule(update)
 
 
@@ -57,6 +56,8 @@ def on_draw():
 
     shader.bind()
 
+    shader.uniformf('bump', bump)
+
     glActiveTexture(GL_TEXTURE0)
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, color_texture.id)
@@ -70,7 +71,6 @@ def on_draw():
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, disp_texture.id)
     shader.uniformi('normal_texture', 2)
-
 
     sphere.draw()
 
@@ -143,7 +143,8 @@ def setup():
     glLightfv(GL_LIGHT0, GL_DIFFUSE, vec(0.9, 0.9, 0.9, 1.0))
     glLightfv(GL_LIGHT0, GL_SPECULAR, vec(1.0, 1.0, 1.0, 1.0))
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, vec(0.5, 0.5, 0.5, 1.0))
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,
+                 vec(0.5, 0.5, 0.5, 1.0))
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, vec(1, 1, 1, 1))
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20)
 
@@ -200,7 +201,11 @@ class Sphere(object):
         glCallList(self.list)
 
 setup()
-sphere = Sphere(50, 50)
-rx = ry = rz = 0
+sphere = Sphere(100, 100)
+ry = 0
+bpm = 220
+bps = 60 / bpm
+bump = 0
+total_time = 0
 
 pyglet.app.run()
