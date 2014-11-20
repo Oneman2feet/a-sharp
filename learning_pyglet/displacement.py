@@ -6,7 +6,6 @@ import pyglet
 
 pyglet.resource.path.append('textures')
 pyglet.resource.reindex()
-texturecnt = 1
 
 try:
     # Try and create a window with multisampling (antialiasing)
@@ -57,15 +56,31 @@ def on_draw():
     glPolygonMode(GL_FRONT, GL_FILL)
 
     shader.bind()
-    for i in range(texturecnt):
-        glActiveTexture(GL_TEXTURE0+i)
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, texture[i].id)
-        shader.uniformi('my_color_texture[' + str(i) + ']', i)
+
+    glActiveTexture(GL_TEXTURE0)
+    glEnable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, color_texture.id)
+    shader.uniformi('color_texture', 0)
+    glActiveTexture(GL_TEXTURE0+1)
+    glEnable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, disp_texture.id)
+    shader.uniformi('disp_texture', 1)
+    shader.uniformf('dispMagnitude', 0.2)
+    glActiveTexture(GL_TEXTURE0+2)
+    glEnable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, disp_texture.id)
+    shader.uniformi('normal_texture', 2)
+
+
     sphere.draw()
-    for i in range(texturecnt):
-        glActiveTexture(GL_TEXTURE0+i)
-        glDisable(GL_TEXTURE_2D)
+
+    glActiveTexture(GL_TEXTURE0+2)
+    glDisable(GL_TEXTURE_2D)
+    glActiveTexture(GL_TEXTURE0+1)
+    glDisable(GL_TEXTURE_2D)
+    glActiveTexture(GL_TEXTURE0)
+    glDisable(GL_TEXTURE_2D)
+
     shader.unbind()
 
 
@@ -74,10 +89,17 @@ def setup():
     global light0pos
     global light1pos
     global toggletexture
-    global texture
+    global color_texture
+    global disp_texture
+    global shader
 
-    light0pos = [20.0, 20.0, 0.0, 1.0]  # positional light !
-    light1pos = [-20.0, -20.0, 20.0, 0.0]  # infinitely away light !
+    vert_handle = open("DispMapped.vert")
+    vert = ["".join([line for line in vert_handle])]
+    frag_handle = open("DispMapped.frag")
+    frag = ["".join([line for line in frag_handle])]
+    shader = Shader(vert, frag)
+
+    light0pos = [5.0, 5.0, 5.0, 1.0]  # positional light !
     glClearColor(1, 1, 1, 1)
     glColor4f(1, 1, 1, 1)
     glEnable(GL_DEPTH_TEST)
@@ -94,105 +116,36 @@ def setup():
     # include it.
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
-    glEnable(GL_LIGHT1)
+
+    color_file = 'Texturemap0.jpg'
+    print "Loading Texture", color_file
+    textureSurface = pyglet.resource.texture(color_file)
+    color_texture = textureSurface.get_texture()
+    glBindTexture(color_texture.target, color_texture.id)
+    print "Color texture bound to ", color_texture.id
+
+    disp_file = 'Texturemap1.jpg'
+    print "Loading Texture", disp_file
+    textureSurface = pyglet.resource.texture(disp_file)
+    disp_texture = textureSurface.get_texture()
+    glBindTexture(disp_texture.target, disp_texture.id)
+    print "Displacement texture bound to ", disp_texture.id
+
+    normal_file = 'Texturemap2.jpg'
+    print "Loading Texture", normal_file
+    textureSurface = pyglet.resource.texture(normal_file)
+    normal_texture = textureSurface.get_texture()
+    glBindTexture(normal_texture.target, normal_texture.id)
+    print "Normal texture bound to ", normal_texture.id
 
     glLightfv(GL_LIGHT0, GL_POSITION, vec(*light0pos))
-    glLightfv(GL_LIGHT0, GL_AMBIENT, vec(0.3, 0.3, 0.3, 1.0))
+    glLightfv(GL_LIGHT0, GL_AMBIENT, vec(0.9, 0.9, 0.9, 1.0))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, vec(0.9, 0.9, 0.9, 1.0))
     glLightfv(GL_LIGHT0, GL_SPECULAR, vec(1.0, 1.0, 1.0, 1.0))
 
-    glLightfv(GL_LIGHT1, GL_POSITION, vec(*light1pos))
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, vec(.6, .6, .6, 1.0))
-    glLightfv(GL_LIGHT1, GL_SPECULAR, vec(1.0, 1.0, 1.0, 1.0))
-
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, vec(0.5, 0.5, 0.5, 1.0))
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, vec(1, 1, 1, 1))
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50)
-
-    texture = []
-    for i in xrange(texturecnt):
-        texturefile = 'Texturemap' + str(i) + '.jpg'
-        print "Loading Texture", texturefile
-        textureSurface = pyglet.resource.texture(texturefile)
-        texture.append(textureSurface.get_texture())
-        glBindTexture(texture[i].target, texture[i].id)
-        print "Texture ", i, " bound to ", texture[i].id
-
-    glLightfv(GL_LIGHT0, GL_POSITION, vec(.5, .5, 1, 0))
-    glLightfv(GL_LIGHT0, GL_SPECULAR, vec(.5, .5, 1, 1))
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, vec(1, 1, 1, 1))
-    glLightfv(GL_LIGHT1, GL_POSITION, vec(1, 0, .5, 0))
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, vec(.5, .5, .5, 1))
-    glLightfv(GL_LIGHT1, GL_SPECULAR, vec(1, 1, 1, 1))
-
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, vec(0.5, 0.5, 0.5, 1))
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, vec(1, 1, 1, 1))
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50)
-
-
-shader = Shader(['''
-    varying vec3 normal, lightDir0, lightDir1, eyeVec;
-
-    void main()
-    {
-        normal = gl_NormalMatrix * gl_Normal;
-
-        vec3 vVertex = vec3(gl_ModelViewMatrix * gl_Vertex);
-
-        lightDir0 = vec3(gl_LightSource[0].position.xyz - vVertex);
-        lightDir1 = vec3(gl_LightSource[1].position.xyz - vVertex);
-        eyeVec = -vVertex;
-
-        gl_Position = ftransform();
-        gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
-    }
-    '''], ['''
-    varying vec3 normal, lightDir0, lightDir1, eyeVec;
-    uniform sampler2D my_color_texture['''+str(texturecnt)+'''];
-
-    void main(void)
-    {
-        vec4 texColor = texture2D(my_color_texture[0], gl_TexCoord[0].st);
-        vec4 final_color;
-
-        vec4 sceneColor = gl_FrontLightModelProduct.sceneColor;
-        vec4 rgb = vec4(texColor.rgb,1.0);
-        final_color = (sceneColor * rgb) +
-            (gl_LightSource[0].ambient * rgb) +
-            (gl_LightSource[1].ambient * rgb);
-
-        vec3 N = normalize(normal);
-        vec3 L0 = normalize(lightDir0);
-        vec3 L1 = normalize(lightDir1);
-
-        float lambertTerm0 = dot(N, L0);
-        float lambertTerm1 = dot(N, L1);
-
-        if(lambertTerm0 > 0.0)
-        {
-            final_color += gl_LightSource[0].diffuse *
-                gl_FrontMaterial.diffuse * lambertTerm0;
-
-            vec3 E = normalize(eyeVec);
-            vec3 R = reflect(-L0, N);
-            float specular = pow(max(dot(R,E),0.0),gl_FrontMaterial.shininess);
-            final_color += gl_LightSource[0].diffuse *
-                gl_FrontMaterial.diffuse * specular;
-        }
-        if(lambertTerm1 > 0.0)
-        {
-            final_color += gl_LightSource[1].diffuse *
-                gl_FrontMaterial.diffuse * lambertTerm1;
-
-            vec3 E = normalize(eyeVec);
-            vec3 R = reflect(-L0, N);
-            float specular = pow(max(dot(R,E),0.0),gl_FrontMaterial.shininess);
-            final_color += gl_LightSource[1].diffuse *
-                gl_FrontMaterial.diffuse * specular;
-        }
-        gl_FragColor = final_color;
-    }
-    '''])
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20)
 
 
 class Sphere(object):
@@ -213,7 +166,6 @@ class Sphere(object):
 
                 positions.extend([x, y, z])
                 normals.extend([x, y, z])
-                print [i/divLong, 1-(j/divLat)]
                 uvs.extend([i/divLong, 1-(j/divLat)])
         # Create ctypes arrays of the lists
         positions = vec(*positions)
@@ -248,7 +200,7 @@ class Sphere(object):
         glCallList(self.list)
 
 setup()
-sphere = Sphere(100, 100)
+sphere = Sphere(50, 50)
 rx = ry = rz = 0
 
 pyglet.app.run()
