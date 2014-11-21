@@ -31,10 +31,9 @@ def on_resize(width, height):
 def update(dt):
     global ry, total_time, bps, bump
     total_time += dt
-    total_time %= bps
     ry += dt * 80
     ry %= 360
-    bump = abs(total_time - bps/2)**2 * 5
+    bump = abs((total_time+bps/2)%bps - bps/2)**2 * 5
 pyglet.clock.schedule(update)
 
 
@@ -49,7 +48,7 @@ def on_draw():
     glLoadIdentity()
     glTranslatef(0, 0, -4)
     glRotatef(0, 0, 0, 1)
-    # glRotatef(ry, 0, 1, 0)
+    glRotatef(ry, 0, 1, 0)
     glRotatef(0, 1, 0, 0)
 
     glPolygonMode(GL_FRONT, GL_FILL)
@@ -71,6 +70,8 @@ def on_draw():
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, disp_texture.id)
     shader.uniformi('normal_texture', 2)
+    shader.uniformf('total_time', total_time)
+    shader.uniformf('bps', bps)
 
     sphere.draw()
 
@@ -104,7 +105,19 @@ def setup():
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_CULL_FACE)
 
-    color_file = 'Texturemap0.jpg'
+    # Uncomment this line for a wireframe view
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+    # Simple light setup.  On Windows GL_LIGHT0 is enabled by default,
+    # but this is not the case on Linux or Mac, so remember to always
+    # include it.
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+
+    color_file = 'BlackTexture.jpg'
     print "Loading Texture", color_file
     textureSurface = pyglet.resource.texture(color_file)
     color_texture = textureSurface.get_texture()
