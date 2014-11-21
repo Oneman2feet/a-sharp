@@ -5,8 +5,7 @@ from pyglet.gl import *
 import pyglet
 import argparse
 import librosa
-import numpy as np
-import time
+import musicplayer
 
 pyglet.resource.path.append('textures')
 pyglet.resource.reindex()
@@ -35,6 +34,7 @@ def on_resize(width, height):
 def update(dt):
     global ry, elapsed_time, bps, bump, bframe
     elapsed_time += dt
+    # print elapsed_time
 
     if currSong == len(master):
         pyglet.clock.unschedule(update)
@@ -71,6 +71,7 @@ def vec(*args):
 
 @window.event
 def on_draw():
+    player.playing = True
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     glTranslatef(0, 0, -4)
@@ -264,6 +265,22 @@ def next_song(dt):
     bframe = 1
 
 
+class Song(object):
+    def __init__(self, fn):
+        self.url = fn
+        self.f = open(fn)
+
+    def __eq__(self, other):
+        return self.url == other.url
+
+    def readPacket(self, bufSize):
+        return self.f.read(bufSize)
+
+    def seekRaw(self, offset, whence):
+        r = self.f.seek(offset, whence)
+        return self.f.tell()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process a sound file.')
     parser.add_argument('songs', type=str, nargs='*', help='the paths to the sound files')
@@ -309,5 +326,12 @@ if __name__ == '__main__':
     n = 20
     pyglet.clock.schedule_interval(next_song, n)
 
-    player.play()
+    raw_input("Analysis complete. Press Enter to continue...\n")
+
+    def queue():
+        while True:
+            yield Song(args.filename)
+
+    player = musicplayer.createPlayer()
+    player.queue = queue()
     pyglet.app.run()
