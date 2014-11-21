@@ -36,6 +36,13 @@ def update(dt):
     global ry, elapsed_time, bps, bump, bframe
     elapsed_time += dt
 
+    if currSong == len(master):
+        pyglet.clock.unschedule(update)
+        pyglet.app.exit()
+        return
+
+    beat_times = master[currSong]
+
     next_beat = beat_times[bframe]
 
     if next_beat - elapsed_time < 0:
@@ -250,31 +257,42 @@ def load_song(filename, d):
 def separate_fg_and_bg(y):
     return librosa.effects.hpss(y)
 
+def next_song(dt):
+    global currSong
+    currSong += 1
+    player.next()
+    bframe = 1
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process a sound file.')
-    parser.add_argument('filename', type=str, help='the path to the sound file')
-    parser.add_argument('-d', dest='duration', type=float, help='specify the duration of the sound file to be analyzed')
+    parser.add_argument('songs', type=str, nargs='*', help='the paths to the sound files')
     args = parser.parse_args()
 
-    y, sr = load_song(args.filename, args.duration)
-    # D = np.abs(librosa.stft(y))
-    # print "about to display"
-    # librosa.display.specshow(D, sr=sr, y_axis='linear')
-    # print "done"
+    # build my song infos
+    currSong = 0
+    clip_length = 30 # 30 second clip
+    master = []
+    player = pyglet.media.Player()
+    for i, song in enumerate(args.songs):
+        print "Analyzing " + song + "..."
+        y, sr = load_song(song, clip_length)
+        y_harmonic, y_percussive = separate_fg_and_bg(y)
+        print "Separated FG and BG"
+        hop_length = 64
+        tempo, beat_frames = librosa.beat.beat_track(y=y_percussive,
+                                                     sr=sr,
+                                                     hop_length=hop_length)
+        print "Calculated beat frames"
+        beat_times = [0] + [librosa.frames_to_time(beat_frame,
+                                                   sr=sr,
+                                                   hop_length=hop_length)
+                            for beat_frame in beat_frames]
+        master.append(beat_times)
 
-    y_harmonic, y_percussive = separate_fg_and_bg(y)
-
-    print "Separated FG and BG"
-
-    hop_length = 64
-
-    # Beat track on the percussive signal
-    tempo, beat_frames = librosa.beat.beat_track(y=y_percussive,
-                                                 sr=sr,
-                                                 hop_length=hop_length)
-
-    print "Calculated beat frames"
+        # put in player
+        song = pyglet.media.load(song)
+        player.queue(song)
 
     setup()
     sphere = Sphere(100, 100)
@@ -285,14 +303,11 @@ if __name__ == '__main__':
     elapsed_time = 0
     bframe = 1
 
-    beat_times = [0] + [librosa.frames_to_time(beat_frame,
-                                               sr=sr,
-                                               hop_length=hop_length)
-                        for beat_frame in beat_frames]
+    raw_input("Analysis complete. Press Enter to continue...\n")
 
-    song = pyglet.media.load(args.filename)
-    player = pyglet.media.Player()
-    player.queue(song)
-    player.eos_action = pyglet.media.Player.EOS_LOOP
+    # go to the next song every n seconds
+    n = 20
+    pyglet.clock.schedule_interval(next_song, n)
+
     player.play()
     pyglet.app.run()
