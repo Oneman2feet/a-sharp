@@ -17,9 +17,14 @@ void main() {
   // vec3 heights = dispColor;
   // float average = ((heights.x + heights.y + heights.z) / 3);
   vec4 newPos = gl_Vertex;
-  if(gl_VertexID % 10 == 0) {
+  int index = gl_VertexID % 48;
+  if(index == 0 || index == 3 || index == 43 || index == 41 || index == 34 || index == 32) {
     newPos = gl_Vertex + vec4(gl_Normal, 0) * bump;
   }
+
+  // if(gl_VertexID % 10 == 1 || gl_VertexID % 10 == 9) {
+  //   newPos = gl_Vertex + vec4(gl_Normal, 0) * bump * (1/2);
+  // }
 
   worldPos = gl_ModelViewMatrix * newPos;
 

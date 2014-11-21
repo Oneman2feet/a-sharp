@@ -34,7 +34,7 @@ def update(dt):
     total_time %= bps
     ry += dt * 80
     ry %= 360
-    bump = abs(total_time - bps/2)
+    bump = abs(total_time - bps/2)**2 * 5
 pyglet.clock.schedule(update)
 
 
@@ -49,7 +49,7 @@ def on_draw():
     glLoadIdentity()
     glTranslatef(0, 0, -4)
     glRotatef(0, 0, 0, 1)
-    glRotatef(ry, 0, 1, 0)
+    # glRotatef(ry, 0, 1, 0)
     glRotatef(0, 1, 0, 0)
 
     glPolygonMode(GL_FRONT, GL_FILL)
@@ -106,7 +106,7 @@ def setup():
     glEnable(GL_CULL_FACE)
 
     # Uncomment this line for a wireframe view
-    # glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -201,9 +201,9 @@ class Sphere(object):
         glCallList(self.list)
 
 setup()
-sphere = Sphere(100, 100)
+sphere = Sphere(50, 50)
 ry = 0
-bpm = 220
+bpm = 120
 bps = 60 / bpm
 bump = 0
 total_time = 0
