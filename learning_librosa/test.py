@@ -1,7 +1,7 @@
 import sys
 import argparse
 import librosa
-#import numpy as np
+import numpy as np
 
 # matplotlib for displaying the output
 #import matplotlib.pyplot as plt
