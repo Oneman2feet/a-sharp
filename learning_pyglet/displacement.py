@@ -40,6 +40,10 @@ def update(dt):
 
     if next_beat - elapsed_time < 0:
         bframe += 1
+        if bframe == len(beat_times):
+            pyglet.clock.unschedule(update)
+            pyglet.app.exit()
+            return
         next_beat = beat_times[bframe]
 
     prev_beat = beat_times[bframe - 1]
@@ -133,7 +137,7 @@ def setup():
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
 
-    color_file = 'BlackTexture.jpg'
+    color_file = 'bluesphere.jpg'
     print "Loading Texture", color_file
     textureSurface = pyglet.resource.texture(color_file)
     color_texture = textureSurface.get_texture()
@@ -289,5 +293,6 @@ if __name__ == '__main__':
     song = pyglet.media.load(args.filename)
     player = pyglet.media.Player()
     player.queue(song)
+    player.eos_action = pyglet.media.Player.EOS_LOOP
     player.play()
     pyglet.app.run()
