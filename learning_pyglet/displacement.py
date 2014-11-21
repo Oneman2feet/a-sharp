@@ -3,6 +3,10 @@ from math import pi, sin, cos
 from shader import Shader
 from pyglet.gl import *
 import pyglet
+import argparse
+import librosa
+import numpy as np
+import time
 
 pyglet.resource.path.append('textures')
 pyglet.resource.reindex()
@@ -33,7 +37,7 @@ def update(dt):
     total_time += dt
     ry += dt * 80
     ry %= 360
-    bump = abs((total_time+bps/2)%bps - bps/2)**2 * 5
+    bump = abs((total_time+bps/2) % bps - bps/2)**2 * 5
 pyglet.clock.schedule(update)
 
 
@@ -219,12 +223,54 @@ class Sphere(object):
     def draw(self):
         glCallList(self.list)
 
-setup()
-sphere = Sphere(100, 100)
-ry = 0
-bpm = 120
-bps = 60 / bpm
-bump = 0
-total_time = 0
 
-pyglet.app.run()
+def load_song(filename, d):
+    print "About to load sound file %s" % filename
+    y, sr = librosa.load(filename, duration=d)
+    print "Successfully loaded file."
+    return y, sr
+
+
+def separate_fg_and_bg(y):
+    return librosa.effects.hpss(y)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Process a sound file.')
+    parser.add_argument('filename', type=str, help='the path to the sound file')
+    parser.add_argument('-d', dest='duration', type=float, help='specify the duration of the sound file to be analyzed')
+    args = parser.parse_args()
+
+    y, sr = load_song(args.filename, args.duration)
+    # D = np.abs(librosa.stft(y))
+    # print "about to display"
+    # librosa.display.specshow(D, sr=sr, y_axis='linear')
+    # print "done"
+
+    y_harmonic, y_percussive = separate_fg_and_bg(y)
+
+    print "Separated FG and BG"
+
+    hop_length = 64
+
+    # Beat track on the percussive signal
+    tempo, beat_frames = librosa.beat.beat_track(y=y_percussive,
+                                                 sr=sr,
+                                                 hop_length=hop_length)
+
+    print "Calculated beat frames"
+
+    setup()
+    sphere = Sphere(100, 100)
+    ry = 0
+    bpm = tempo
+    bps = 60 / bpm
+    bump = 0
+    total_time = 0
+
+    music = pyglet.media.load(args.filename)
+    music.play()
+    delay = librosa.frames_to_time(beat_frames[0], sr=sr, hop_length=hop_length)
+    print delay
+    time.sleep(delay)
+    pyglet.app.run()
