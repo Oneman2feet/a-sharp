@@ -18,7 +18,10 @@ void main() {
   // float average = ((heights.x + heights.y + heights.z) / 3);
   vec4 newPos = gl_Vertex;
   int index = gl_VertexID % 48;
-  if(index == 0 || index == 3 || index == 43 || index == 41 || index == 34 || index == 32) {
+  // if(index == 0 || index == 3 || index == 43 || index == 41 || index == 34 || index == 32) {
+  //   newPos = gl_Vertex + vec4(gl_Normal, 0) * bump;
+  // }
+  if(index == 0 || index == 3 || index == 43 || index == 29 || index == 22 || index == 20){
     newPos = gl_Vertex + vec4(gl_Normal, 0) * bump;
   }
 

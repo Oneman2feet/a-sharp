@@ -99,23 +99,10 @@ def setup():
     frag = ["".join([line for line in frag_handle])]
     shader = Shader(vert, frag)
 
-    light0pos = [5.0, 5.0, 5.0, 1.0]  # positional light !
     glClearColor(1, 1, 1, 1)
     glColor4f(1, 1, 1, 1)
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_CULL_FACE)
-
-    # Uncomment this line for a wireframe view
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-    # Simple light setup.  On Windows GL_LIGHT0 is enabled by default,
-    # but this is not the case on Linux or Mac, so remember to always
-    # include it.
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
 
     color_file = 'Texturemap0.jpg'
     print "Loading Texture", color_file
@@ -138,10 +125,31 @@ def setup():
     glBindTexture(normal_texture.target, normal_texture.id)
     print "Normal texture bound to ", normal_texture.id
 
+    # Uncomment this line for a wireframe view
+    # glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+    # Simple light setup.  On Windows GL_LIGHT0 is enabled by default,
+    # but this is not the case on Linux or Mac, so remember to always
+    # include it.
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glEnable(GL_LIGHT1)
+
+    light0pos = [5.0, 5.0, 5.0, 1.0]  # positional light !
+    light1pos = [-5.0, 5.0, 5.0, 1.0]
+
     glLightfv(GL_LIGHT0, GL_POSITION, vec(*light0pos))
     glLightfv(GL_LIGHT0, GL_AMBIENT, vec(0.9, 0.9, 0.9, 1.0))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, vec(0.9, 0.9, 0.9, 1.0))
     glLightfv(GL_LIGHT0, GL_SPECULAR, vec(1.0, 1.0, 1.0, 1.0))
+
+    glLightfv(GL_LIGHT1, GL_POSITION, vec(*light1pos))
+    glLightfv(GL_LIGHT1, GL_AMBIENT, vec(0.1, 0.1, 0.1, 1.0))
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, vec(0.9, 0.9, 0.9, 1.0))
+    glLightfv(GL_LIGHT1, GL_SPECULAR, vec(1.0, 1.0, 1.0, 1.0))
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,
                  vec(0.5, 0.5, 0.5, 1.0))
@@ -185,7 +193,6 @@ class Sphere(object):
         self.list = glGenLists(1)
         glNewList(self.list, GL_COMPILE)
 
-        glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT)
         glEnableClientState(GL_VERTEX_ARRAY)
         glEnableClientState(GL_NORMAL_ARRAY)
         glEnableClientState(GL_TEXTURE_COORD_ARRAY)
@@ -193,7 +200,6 @@ class Sphere(object):
         glNormalPointer(GL_FLOAT, 0, normals)
         glTexCoordPointer(2, GL_FLOAT, 0, uvs)
         glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, indices)
-        glPopClientAttrib()
 
         glEndList()
 
@@ -201,7 +207,7 @@ class Sphere(object):
         glCallList(self.list)
 
 setup()
-sphere = Sphere(50, 50)
+sphere = Sphere(100, 100)
 ry = 0
 bpm = 120
 bps = 60 / bpm

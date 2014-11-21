@@ -17,8 +17,6 @@ void main() {
     vec3 N = normalize(fN);
     vec3 V = normalize(-worldPos.xyz);
 
-    vec3 lightDir0 = vec3(gl_LightSource[0].position.xyz - worldPos.xyz);
-
     vec4 texColor = vec4(texture2D(color_texture, gl_TexCoord[0].st).rgb, 1.0);
 
     vec4 sceneColor = gl_FrontLightModelProduct.sceneColor;
@@ -26,18 +24,20 @@ void main() {
     vec4 finalColor = (sceneColor * rgb) +
         (gl_LightSource[0].ambient * rgb);
 
-    float r = length(gl_LightSource[0].position.xyz - worldPos.xyz);
-    vec3 L = normalize(gl_LightSource[0].position.xyz - worldPos.xyz);
-    vec3 H = normalize(L + V);
+    for (int i = 0; i < 2; i++){
+        float r = length(gl_LightSource[i].position.xyz - worldPos.xyz);
+        vec3 L = normalize(gl_LightSource[i].position.xyz - worldPos.xyz);
+        vec3 H = normalize(L + V);
 
-    vec4 Idiff = gl_LightSource[0].diffuse * gl_FrontMaterial.diffuse * max(dot(N, L), 0.0);
-    Idiff = clamp(Idiff, 0.0, 1.0);
+        vec4 Idiff = gl_LightSource[i].diffuse * gl_FrontMaterial.diffuse * max(dot(N, L), 0.0);
+        Idiff = clamp(Idiff, 0.0, 1.0);
 
-    float specular = pow(max(dot(N, H), 0.0), gl_FrontMaterial.shininess);
-    vec4 Ispec = gl_LightSource[0].specular * gl_FrontMaterial.specular * specular;
-    Ispec = clamp(Ispec, 0.0, 1.0);
+        float specular = pow(max(dot(N, H), 0.0), gl_FrontMaterial.shininess);
+        vec4 Ispec = gl_LightSource[i].specular * gl_FrontMaterial.specular * specular;
+        Ispec = clamp(Ispec, 0.0, 1.0);
 
-    finalColor += (Ispec + Idiff) / (r * r);
+        finalColor += (Ispec + Idiff) / (r * r);
+    }
 
     gl_FragColor = finalColor;
 }
