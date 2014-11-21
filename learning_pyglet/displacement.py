@@ -33,11 +33,23 @@ def on_resize(width, height):
 
 
 def update(dt):
-    global ry, total_time, bps, bump
-    total_time += dt
+    global ry, elapsed_time, bps, bump, bframe
+    elapsed_time += dt
+
+    next_beat = beat_times[bframe]
+
+    if next_beat - elapsed_time < 0:
+        bframe += 1
+        next_beat = beat_times[bframe]
+
+    prev_beat = beat_times[bframe - 1]
+
+    time_since_prev_beat = elapsed_time - prev_beat
+    local_spb = next_beat - prev_beat
+    bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
+
     ry += dt * 80
     ry %= 360
-    bump = abs((total_time+bps/2) % bps - bps/2)**2 * 5
 pyglet.clock.schedule(update)
 
 
@@ -74,7 +86,7 @@ def on_draw():
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, disp_texture.id)
     shader.uniformi('normal_texture', 2)
-    shader.uniformf('total_time', total_time)
+    shader.uniformf('elapsed_time', elapsed_time)
     shader.uniformf('bps', bps)
 
     sphere.draw()
@@ -266,11 +278,16 @@ if __name__ == '__main__':
     bpm = tempo
     bps = 60 / bpm
     bump = 0
-    total_time = 0
+    elapsed_time = 0
+    bframe = 1
 
-    music = pyglet.media.load(args.filename)
-    music.play()
-    delay = librosa.frames_to_time(beat_frames[0], sr=sr, hop_length=hop_length)
-    print delay
-    time.sleep(delay)
+    beat_times = [0] + [librosa.frames_to_time(beat_frame,
+                                               sr=sr,
+                                               hop_length=hop_length)
+                        for beat_frame in beat_frames]
+
+    song = pyglet.media.load(args.filename)
+    player = pyglet.media.Player()
+    player.queue(song)
+    player.play()
     pyglet.app.run()
