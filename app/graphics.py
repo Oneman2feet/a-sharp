@@ -111,9 +111,9 @@ def setup():
     global light0pos, light1pos
     global color_texture, disp_texture, shader
 
-    vert_handle = open("project/shaders/DispMapped.vert")
+    vert_handle = open("app/shaders/DispMapped.vert")
     vert = ["".join([line for line in vert_handle])]
-    frag_handle = open("project/shaders/DispMapped.frag")
+    frag_handle = open("app/shaders/DispMapped.frag")
     frag = ["".join([line for line in frag_handle])]
     shader = Shader(vert, frag)
 

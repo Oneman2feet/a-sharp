@@ -60,7 +60,7 @@ if __name__ == '__main__':
     hop_length = 64
 
     # Beat track on the percussive signal
-    tempo, beat_frames = beat_track(y=y_percussive)
+    tempo, beat_frames = beat_track(y_percussive)
 
     print "Calculated beat frames"
 
