@@ -21,3 +21,10 @@ Optional Conveniences
 ---------------------
 
 I. Run ```defaults write org.python.python ApplePersistenceIgnoreState NO``` to stop the weird ```ApplePersistenceIgnoreState``` messages
+
+Running
+-------
+
+I. From the parent directory, run ```python app/``` with one of the files in the ```songs/``` directory.
+
+II. Once the song has loaded, the terminal will prompt you to press enter to begin playing.

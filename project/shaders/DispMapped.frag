@@ -3,7 +3,6 @@
 uniform sampler2D color_texture;
 uniform sampler2D normal_texture;
 uniform float elapsed_time;
-uniform float bps;
 
 uniform vec3 lightIntensity;
 uniform vec3 lightPosition;
@@ -26,15 +25,15 @@ void main() {
     vec4 finalColor = (sceneColor * rgb) +
         (gl_LightSource[0].ambient * rgb);
 
-    float t = mod(elapsed_time, 2*bps);
-    float per = mod(elapsed_time / bps, 6);
-    if (per < 2) {
-        finalColor.x += abs(worldPos.x) - abs((1 - t/bps) * worldPos.x);
-    } else if (per < 4) {
-        finalColor.y += abs(worldPos.x) - abs((1 - t/bps) * worldPos.x);
-    } else {
-        finalColor.z += abs(worldPos.x) - abs((1 - t/bps) * worldPos.x);
-    }
+    // float t = mod(elapsed_time, 2*bps);
+    // float per = mod(elapsed_time / bps, 6);
+    // if (per < 2) {
+    //     finalColor.x += abs(worldPos.x) - abs((1 - t/bps) * worldPos.x);
+    // } else if (per < 4) {
+    //     finalColor.y += abs(worldPos.x) - abs((1 - t/bps) * worldPos.x);
+    // } else {
+    //     finalColor.z += abs(worldPos.x) - abs((1 - t/bps) * worldPos.x);
+    // }
     
     // finalColor.x += abs(pow(worldPos.x * worldPos.y, 0.5)) - abs((1 - t/bps) * worldPos.x);
 
