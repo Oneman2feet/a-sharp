@@ -12,8 +12,9 @@ II. Shader.py
   3. Add the line ```from ctypes import *``` to the top of the file
   4. Save "shader.py" into the directory where your Python modules are saved (for Mac should be ```/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/``` or ```/usr/local/lib/python2.7/site-packages```)
 
-III. AVbin (to run music files)
-  1. install this ```http://avbin.github.io/AVbin/Download.html```
+III. Music playback
+  1. ```pip install audioread```
+  2. Install AVbin from (http://avbin.github.io/AVbin/Download.html)
 
 IV. LibROSA (see [learning_librosa](https://github.com/Oneman2feet/a-sharp/tree/master/learning_librosa) for installation)
 
