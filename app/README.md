@@ -15,7 +15,7 @@ II. Shader.py
 III. AVbin (to run music files)
   1. install this ```http://avbin.github.io/AVbin/Download.html```
 
-IV. LibROSA (see [https://github.com/Oneman2feet/a-sharp/tree/master/learning_librosa] for installation)
+IV. LibROSA (see [learning_librosa](https://github.com/Oneman2feet/a-sharp/tree/master/learning_librosa) for installation)
 
 Optional Conveniences
 ---------------------
