@@ -4,6 +4,10 @@ uniform sampler2D color_texture;
 uniform sampler2D normal_texture;
 uniform float elapsed_time;
 
+uniform float diffuse_r;
+uniform float diffuse_g;
+uniform float diffuse_b;
+
 uniform vec3 lightIntensity;
 uniform vec3 lightPosition;
 uniform vec3 ambientLightIntensity;
@@ -22,8 +26,11 @@ void main() {
 
     vec4 sceneColor = gl_FrontLightModelProduct.sceneColor;
     vec4 rgb = vec4(texColor.rgb, 1.0);
+    vec4 diffuse_color = vec4(diffuse_r, diffuse_g, diffuse_b, 1);
+    
     vec4 finalColor = (sceneColor * rgb) +
-        (gl_LightSource[0].ambient * rgb);
+        (gl_LightSource[0].ambient * rgb * diffuse_color);
+
 
     // float t = mod(elapsed_time, 2*bps);
     // float per = mod(elapsed_time / bps, 6);

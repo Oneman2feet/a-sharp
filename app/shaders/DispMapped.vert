@@ -5,6 +5,7 @@ uniform sampler2D disp_texture;
 
 uniform float dispMagnitude;
 uniform float bump;
+uniform float radius;
 
 varying vec3 fN;
 varying vec4 worldPos;
@@ -16,13 +17,15 @@ void main() {
   // vec3 dispColor = texture2D(disp_texture, gl_TexCoord[0].st).rgb;
   // vec3 heights = dispColor;
   // float average = ((heights.x + heights.y + heights.z) / 3);
-  vec4 newPos = gl_Vertex;
+
+  vec4 newPos = vec4(gl_Vertex.xyz * radius, gl_Vertex.w);
+
   int index = gl_VertexID % 48;
   // if(index == 0 || index == 3 || index == 43 || index == 41 || index == 34 || index == 32) {
   //   newPos = gl_Vertex + vec4(gl_Normal, 0) * bump;
   // }
   if(index == 0 || index == 3 || index == 43 || index == 29 || index == 22 || index == 20){
-    newPos = gl_Vertex + vec4(gl_Normal, 0) * bump;
+    newPos = newPos + vec4(gl_Normal, 0) * bump;
   }
 
   // if(gl_VertexID % 10 == 1 || gl_VertexID % 10 == 9) {

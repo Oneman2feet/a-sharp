@@ -1,6 +1,7 @@
 from __future__ import division
 from shader import Shader
 from pyglet.gl import *
+from math import cos, sin, pi
 import utils
 import pyglet
 
@@ -38,7 +39,7 @@ def on_resize(width, height):
 
 
 def update(dt):
-    global elapsed_time, bump, bframe, ry
+    global elapsed_time, bump, bframe, ry, radius, diffuse_color
     elapsed_time += dt
     # print elapsed_time
 
@@ -57,6 +58,9 @@ def update(dt):
     time_since_prev_beat = elapsed_time - prev_beat
     local_spb = next_beat - prev_beat
     bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
+    
+    radius = 0.5 * sin(2*elapsed_time) + 1.5
+    diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
 
     ry += dt * 80
     ry %= 360
@@ -78,6 +82,10 @@ def on_draw():
     shader.bind()
 
     shader.uniformf('bump', bump)
+    shader.uniformf('radius', radius)
+    shader.uniformf('diffuse_r', diffuse_color[0])
+    shader.uniformf('diffuse_g', diffuse_color[1])
+    shader.uniformf('diffuse_b', diffuse_color[2])
 
     glActiveTexture(GL_TEXTURE0)
     glEnable(GL_TEXTURE_2D)
