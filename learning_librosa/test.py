@@ -2,6 +2,7 @@ import sys
 import argparse
 import librosa
 import numpy as np
+import matplotlib.pyplot as plt
 
 # matplotlib for displaying the output
 #import matplotlib.pyplot as plt
@@ -26,15 +27,45 @@ if __name__=='__main__':
     parser.add_argument('-d', dest='duration', type=float, help='specify the duration of the sound file to be analyzed')
     args = parser.parse_args()
 
+    print "beginning analysis"
     y, sr = load_song(args.filename, args.duration)
     D = np.abs(librosa.stft(y))
+    C = librosa.feature.chromagram(y, sr)
+    CQT = librosa.cqt(y, sr=sr)
+
+    # Visualize an STFT with linear/log frequency scaling
+    # librosa.display.specshow(D, sr=sr, y_axis='log')
+
+    # Visualize a CQT with note markers
+    # librosa.display.specshow(CQT, sr=sr, y_axis='cqt_note', fmin=librosa.midi_to_hz(24))
+
+    # Draw time markers automatically
+    # librosa.display.specshow(D, sr=sr, hop_length=hop_length, x_axis='time')
+
+    # Draw a chromagram with pitch classes
+    # librosa.display.specshow(C, y_axis='chroma')
+
+    # Force a grayscale colormap (white -> black)
+    # librosa.display.specshow(librosa.logamplitude(D), cmap='OrRd')
+
+    # librosa.display.time_ticks([10.0, 20.0, 30.0])
+
+
+    # trying to visualize spectogram
+    plt.plot(D[0],  color="r")
+    plt.plot(D[10], color="g")
+    plt.plot(D[20], color="b")
+    plt.plot(D[200], color="y")
+
+
     print "about to display"
-    librosa.display.specshow(D, sr=sr, y_axis='linear')
-    print "done"
+    plt.show()
+
+    # tempo, beats = librosa.beat.beat_track(y, sr)
+    # librosa.output.frames_csv('beat_times.csv', beats)
 
     # Separate harmonics and percussives into two waveforms
     #H, P = librosa.effects.hpss(D)
-
 
 
 #######################################################################################
