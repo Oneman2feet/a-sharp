@@ -42,6 +42,14 @@ def amplitude(y):
     return np.abs(y)
 
 
+# quick amplitude function
+def amplitude_times(filename):
+    y, sr = load_song(filename)
+    y_harmonic, y_percussive = separate_fg_and_bg(y)
+    amplitudes = [ amplitude(x) for x in y_harmonic ]
+    return amplitudes
+
+
 
 # main method, parses filename and analyses the sound
 if __name__ == '__main__':
@@ -55,7 +63,9 @@ if __name__ == '__main__':
     y_harmonic, y_percussive = separate_fg_and_bg(y)
 
     # graph y_harmonic
-    plt.plot(amplitude(y_harmonic))
+    CQT = librosa.cqt(y, sr=sr)
+    # librosa.display.specshow(CQT, sr=sr, y_axis='cqt_note', fmin=librosa.midi_to_hz(24))
+    plt.plot(CQT)
     plt.show()
 
     # format beats for graphics
@@ -68,14 +78,6 @@ if __name__ == '__main__':
 ####################################################
 
 def blaze():
-    # Set the hop length
-    hop_length = 64
-
-    # Beat track on the percussive signal
-    tempo, beat_frames = librosa.beat.beat_track(y=y_percussive, sr=sr, hop_length=hop_length)
-
-    print "Tempo: %0.2f" % tempo
-
     # Compute MFCC features from the raw signal
     mfcc = librosa.feature.mfcc(y=y, sr=sr, hop_length=hop_length, n_mfcc=13)
 
