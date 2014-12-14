@@ -44,23 +44,27 @@ def amplitude(y):
 def complexity(y):
     np.abs(librosa.stft(y))
 
+def format_complexities(complexities):
+    return [ complexities[1:129] for a in np.arange(128) ]
+
 
 
 
 # formats analysis of sound file into a single easy-to-use dictionary
-# beats is a list of frames in the sound file for which a beat event occurs
+# beats is a list of times in the sound file for which a beat event occurs
 # amplitudes is a list of the amplitude of the sound at a given frame
-# complexities is a list of the complexity of the sound (as an array) at a given frame
+# complexities is a 2d texture list of the complexity of the sound at a given frame
 # times is a list of times when each frame occurs
-def gather_data(filename):
-    y, sr = load_song(filename)
-    y_harmonic, y_percussive = separate_fg_and_bg(y)
-    amplitudes = amplitude(y_harmonic)
-    complexities = complexity(y_harmonic)
-    tempo, beat_frames = beat_track(y_percussive)
-    times = [ frames_to_time(f) for f in np.arange(len(amplitudes)) ]
+def gather_data(filename, framerate):
+    y, sr = librosa.load(filename)
+    y_harmonic, y_percussive = librosa.effects.hpss(y)
+    amplitudes = np.abs(y_harmonic)
+    complexities = format_complexities(np.abs(librosa.stft(y_harmonic)))
+    tempo, beat_frames = librosa.beat.beat_track(y=y_percussive)
+    beats = [0] + [ librosa.frames_to_time(beat) for beat in beat_frames ]
+    times = [ librosa.frames_to_time(f) for f in np.arange(len(amplitudes)) ]
     return {
-        'beats': beat_frames,
+        'beats': beats,
         'amplitudes': amplitudes,
         'complexities': complexities,
         'times': times
@@ -73,7 +77,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process a sound file.')
     parser.add_argument('filename', type=str, help='the path to the sound file')
     args = parser.parse_args()
-    print gather_data(args.filename)
+    output = gather_data(args.filename)
+    print output
 
     '''
     logging.basicConfig(level=log_level)
