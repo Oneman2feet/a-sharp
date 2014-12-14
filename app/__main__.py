@@ -1,28 +1,9 @@
 from __future__ import division
 from sphere import Sphere
+from analysis import gather_data
 import graphics
 import argparse
-import librosa
 import musicplayer
-
-
-def load_song(filename, d):
-    print "About to load sound file %s" % filename
-    y, sr = librosa.load(filename, duration=d)
-    print "Successfully loaded file."
-    return y, sr
-
-
-def separate_fg_and_bg(y):
-    return librosa.effects.hpss(y)
-
-
-def frames_to_time(beat_frame):
-    return librosa.frames_to_time(beat_frame, sr=sr, hop_length=hop_length)
-
-
-def beat_track(y_perc):
-    return librosa.beat.beat_track(y=y_perc, sr=sr, hop_length=hop_length)
 
 
 class Song(object):
@@ -51,24 +32,13 @@ if __name__ == '__main__':
     parser.add_argument('filename', type=str, help='the path to the sound file')
     parser.add_argument('-d', dest='duration', type=float, help='specify the duration of the sound file to be analyzed')
     args = parser.parse_args()
+    framerate = 0.1  # change this to adjust video and audio analysis fr
+    song_info = gather_data(args.filename, framerate)
 
-    y, sr = load_song(args.filename, args.duration)
-    y_harmonic, y_percussive = separate_fg_and_bg(y)
-
-    print "Separated FG and BG"
-
-    hop_length = 64
-
-    # Beat track on the percussive signal
-    tempo, beat_frames = beat_track(y_percussive)
-
-    print "Calculated beat frames"
-
-    beat_times = [0] + [frames_to_time(frame) for frame in beat_frames]
     player = musicplayer.createPlayer()
     sphere = Sphere(100, 100)
 
-    graphics.initialize(player, beat_times, sphere)
+    graphics.initialize(player, song_info['beats'], sphere, framerate)
     graphics.setup()
 
     raw_input("Analysis complete. Press Enter to continue...\n")

@@ -20,15 +20,17 @@ except pyglet.window.NoSuchConfigException:
     window = pyglet.window.Window(resizable=True)
 
 
-def initialize(_player, _beat_times, _mesh):
-    global elapsed_time, bump, bframe, ry, beat_times, player, mesh
+def initialize(_player, _beat_times, _mesh, _framerate):
+    global elapsed_time, bump, bframe, ry, beat_times, player, mesh, framerate
     beat_times = _beat_times
     mesh = _mesh
     player = _player
+    framerate = _framerate
     elapsed_time = bump = ry = 0
     bframe = 1
     pyglet.resource.path.append('textures')
     pyglet.resource.reindex()
+    pyglet.clock.schedule_interval(update, framerate)
 
 
 @window.event
@@ -43,9 +45,8 @@ def on_resize(width, height):
 
 
 def update(dt):
-    global elapsed_time, bump, bframe, ry, radius, diffuse_color
+    global elapsed_time, bump, bframe, radius, diffuse_color
     elapsed_time += dt
-    # print elapsed_time
 
     next_beat = beat_times[bframe]
 
@@ -66,10 +67,6 @@ def update(dt):
     radius = 1 + 0.2 * beat_bump
 
     diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
-
-    ry += dt * 80
-    ry %= 360
-pyglet.clock.schedule(update)
 
 
 @window.event
@@ -165,25 +162,10 @@ def setup():
     disp_tex_id = GLuint(0)
     glGenTextures(1, byref(disp_tex_id))
 
-    #disp_file = 'disp_map.jpg'
-    #print "Loading Texture", disp_file
-    #textureSurface = pyglet.resource.texture(disp_file)
-    #disp_texture = textureSurface.get_texture()
-    #glBindTexture(disp_texture.target, disp_texture.id)
-    #print "Displacement texture bound to ", disp_texture.id
-
-    #normal_file = 'Texturemap2.jpg'
-    #print "Loading Texture", normal_file
-    #textureSurface = pyglet.resource.texture(normal_file)
-    #normal_texture = textureSurface.get_texture()
-    #glBindTexture(normal_texture.target, normal_texture.id)
-    #print "Normal texture bound to ", normal_texture.id
-
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     light0pos = [5.0, 5.0, 5.0, 1.0]  # positional light !
-    light1pos = [-5.0, 5.0, 5.0, 1.0]
 
     glLightfv(GL_LIGHT0, GL_POSITION, utils.vecf(*light0pos))
     glLightfv(GL_LIGHT0, GL_AMBIENT, utils.vecf(0.9, 0.9, 0.9, 1.0))
