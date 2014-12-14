@@ -48,21 +48,34 @@ def complexity(y):
 
 
 # formats analysis of sound file into a single easy-to-use dictionary
-# beats is a list of the times in the sound file when a beat event occurs
+# beats is a list of frames in the sound file for which a beat event occurs
 # amplitudes is a list of the amplitude of the sound at a given frame
 # complexities is a list of the complexity of the sound (as an array) at a given frame
+# times is a list of times when each frame occurs
 def gather_data(filename):
     y, sr = load_song(filename)
     y_harmonic, y_percussive = separate_fg_and_bg(y)
     amplitudes = amplitude(y_harmonic)
     complexities = complexity(y_harmonic)
     tempo, beat_frames = beat_track(y_percussive)
-    beats = [ frames_to_time(beat) for beat in beat_frames ]
-    return { 'beats':beats, 'amplitudes':amplitudes, 'complexities':complexities }
+    times = [ frames_to_time(f) for f in np.arange(len(amplitudes)) ]
+    return {
+        'beats': beat_frames,
+        'amplitudes': amplitudes,
+        'complexities': complexities,
+        'times': times
+    }
 
 
 # main method, parses filename and analyses the sound
 if __name__ == '__main__':
+    logging.basicConfig(level=log_level)
+    parser = argparse.ArgumentParser(description='Process a sound file.')
+    parser.add_argument('filename', type=str, help='the path to the sound file')
+    args = parser.parse_args()
+    print gather_data(args.filename)
+
+    '''
     logging.basicConfig(level=log_level)
     parser = argparse.ArgumentParser(description='Process a sound file.')
     parser.add_argument('filename', type=str, help='the path to the sound file')
@@ -153,7 +166,7 @@ def blaze():
     # Separate harmonics and percussives into two waveforms
     #H, P = librosa.effects.hpss(D)
 
-
+'''
 
 
 
