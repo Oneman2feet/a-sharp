@@ -49,20 +49,18 @@ def complexity(y):
 
 
 def average_pitch(frequency_amplitudes):
-    '''
-    max_i = 0
-    max_v = frequency_amplitudes[0]
-    for i, amp in enumerate(frequency_amplitudes):
-        if amp>max_v:
-            max_i = i
-            max_v = amp
-    return 2*max_i/len(frequency_amplitudes) - 1
-    '''
     weighted_sum = np.sum([ i*x for i,x in enumerate(frequency_amplitudes) ])
     num = np.sum(frequency_amplitudes)
     if num!=0:
         weighted_sum = weighted_sum / num
     return 2 * weighted_sum / len(frequency_amplitudes) - 1
+
+
+def mood(chromas):
+    important_notes = np.array(chromas).argsort()[::-1]
+    a = important_notes[1]
+    b = important_notes[2]
+    print np.abs(a-b)
 
 # formats analysis of sound file into a single easy-to-use dictionary
 # beats is a list of times in the sound file for which a beat event occurs
@@ -85,11 +83,14 @@ def gather_data(filename):
     # get the average pitches at each frame
     avgpitches = [ average_pitch(freqs) for freqs in frequencies ]
 
+    chromagram = librosa.feature.chromagram(y=y_harmonic, sr=sr, n_fft=2048, hop_length=64)
+    moods = [ mood([ chroma[t] for chroma in chromagram ]) for t in xrange(len(chromagram[0])) if t % 30 == 0]
 
     return {"beats": beats,
             "frequencies": frequencies,
             "fframes": dur / len(frequencies),
-            "translations": avgpitches }
+            "translations": avgpitches,
+            "colors": moods }
 
 # main method, parses filename and analyses the sound
 if __name__ == '__main__':
