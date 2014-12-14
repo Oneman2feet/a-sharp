@@ -1,7 +1,6 @@
 #version 110
 
 uniform sampler2D color_texture;
-uniform sampler2D disp_texture;
 uniform sampler2D normal_texture;
 uniform float elapsed_time;
 
@@ -14,12 +13,9 @@ uniform vec3 ambientLightIntensity;
 varying vec3 fN;
 varying vec4 worldPos;
 varying vec3 eyeVec;
-varying vec4 dispColor;
 
 
 void main() {
-    // vec3 normalColor = texture2D(normal_texture, gl_TexCoord[0].st).rgb;
-    // vec3 N = normalize(gl_NormalMatrix * ((normalColor * 2) - 1));
     vec3 N = normalize(fN);
     vec3 V = normalize(eyeVec);
 
@@ -30,19 +26,6 @@ void main() {
     
     vec4 finalColor = (sceneColor * rgb) +
         (gl_LightSource[0].ambient * rgb * vec4(diffuse_color, 1));
-
-
-    // float t = mod(elapsed_time, 2*bps);
-    // float per = mod(elapsed_time / bps, 6);
-    // if (per < 2) {
-    //     finalColor.x += abs(worldPos.x) - abs((1 - t/bps) * worldPos.x);
-    // } else if (per < 4) {
-    //     finalColor.y += abs(worldPos.x) - abs((1 - t/bps) * worldPos.x);
-    // } else {
-    //     finalColor.z += abs(worldPos.x) - abs((1 - t/bps) * worldPos.x);
-    // }
-    
-    // finalColor.x += abs(pow(worldPos.x * worldPos.y, 0.5)) - abs((1 - t/bps) * worldPos.x);
 
     float r = length(gl_LightSource[0].position.xyz - worldPos.xyz);
     vec3 L = normalize(gl_LightSource[0].position.xyz - worldPos.xyz);
@@ -57,6 +40,5 @@ void main() {
 
     finalColor += (Ispec + Idiff) / (r * r);
 
-    // gl_FragColor = finalColor;
-    gl_FragColor = dispColor;
+    gl_FragColor = finalColor;
 }

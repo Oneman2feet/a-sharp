@@ -98,11 +98,9 @@ def on_draw():
     pix = []
     for x in range(256):
         for y in range(128):
-            pix.append(200)
+            pix.append(random.randint(0,50))
 
-    pix = utils.veci(*pix)
-
-    # data = np.zeros(256*128, 'f')+0.5
+    pix = utils.vecb(*pix)
 
     glActiveTexture(GL_TEXTURE1)
     glEnable(GL_TEXTURE_2D)
@@ -112,7 +110,7 @@ def on_draw():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 128, 256, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 128, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
 
     shader.uniformi('disp_texture', 1)
     shader.uniformf('dispMagnitude', 0.2)
