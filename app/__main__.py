@@ -38,7 +38,7 @@ if __name__ == '__main__':
     player = musicplayer.createPlayer()
     sphere = Sphere(100, 100)
 
-    graphics.initialize(player, sphere, framerate, *song_info.values())
+    graphics.initialize(player, sphere, framerate, song_info['beats'], song_info['amplitudes'], song_info['complexities'])
     graphics.setup()
 
     raw_input("Analysis complete. Press Enter to continue...\n")

@@ -59,9 +59,9 @@ def gather_data(filename, framerate):
     y, sr = librosa.load(filename)
     y_harmonic, y_percussive = librosa.effects.hpss(y)
     amplitudes = np.abs(y_harmonic)
-    complexities = format_complexities(np.abs(librosa.stft(y_harmonic)))
-    tempo, beat_frames = librosa.beat.beat_track(y=y_percussive)
-    beats = [0] + [ librosa.frames_to_time(beat) for beat in beat_frames ]
+    complexities = np.abs(librosa.stft(y_harmonic))
+    tempo, beat_frames = librosa.beat.beat_track(y=y_percussive, sr=sr, hop_length=64)
+    beats = [0] + [ librosa.frames_to_time(beat, sr=sr, hop_length=64) for beat in beat_frames ]
     times = [ librosa.frames_to_time(f) for f in np.arange(len(amplitudes)) ]
     return {
         'beats': beats,

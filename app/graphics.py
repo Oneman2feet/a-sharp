@@ -24,8 +24,8 @@ def initialize(_player, _mesh, _framerate, _beats, _amps, _comps):
     global elapsed_time, bump, bframe, ry, player, mesh, framerate
     global beats, amplitudes, complexities
     beats = _beats
-    amplitudes = _amps
-    complexities = _comps
+    amplitudes = list(_amps)
+    complexities = list(_comps) * 128
     mesh = _mesh
     player = _player
     framerate = _framerate
@@ -57,13 +57,13 @@ def update(dt):
 
     if next_beat - elapsed_time < 0:
         bframe += 1
-        if bframe == len(beat_times):
+        if bframe == len(beats):
             pyglet.clock.unschedule(update)
             pyglet.app.exit()
             return
-        next_beat = beat_times[bframe]
+        next_beat = beats[bframe]
 
-    prev_beat = beat_times[bframe - 1]
+    prev_beat = beats[bframe - 1]
 
     time_since_prev_beat = elapsed_time - prev_beat
     local_spb = next_beat - prev_beat
