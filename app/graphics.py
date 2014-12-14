@@ -20,9 +20,12 @@ except pyglet.window.NoSuchConfigException:
     window = pyglet.window.Window(resizable=True)
 
 
-def initialize(_player, _beat_times, _mesh, _framerate):
-    global elapsed_time, bump, bframe, ry, beat_times, player, mesh, framerate
-    beat_times = _beat_times
+def initialize(_player, _mesh, _framerate, _beats, _amps, _comps):
+    global elapsed_time, bump, bframe, ry, player, mesh, framerate
+    global beats, amplitudes, complexities
+    beats = _beats
+    amplitudes = _amps
+    complexities = _comps
     mesh = _mesh
     player = _player
     framerate = _framerate
@@ -45,10 +48,12 @@ def on_resize(width, height):
 
 
 def update(dt):
-    global elapsed_time, bump, bframe, radius, diffuse_color
+    global elapsed_time, bump, bframe, radius, diffuse_color, complexity
     elapsed_time += dt
 
-    next_beat = beat_times[bframe]
+    next_beat = beats[bframe]
+    amplitude = amplitudes.pop(0)
+    complexity = complexities.pop(0)
 
     if next_beat - elapsed_time < 0:
         bframe += 1
@@ -64,7 +69,8 @@ def update(dt):
     local_spb = next_beat - prev_beat
     beat_bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
     beat_bump = 1 if beat_bump > 1 else beat_bump
-    radius = 1 + 0.2 * beat_bump
+    amp_bump = 1 if amplitude > 1 else amplitude
+    radius = 1 + 0.2 * beat_bump + 0.2 * amp_bump
 
     diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
 
@@ -92,12 +98,7 @@ def on_draw():
     glBindTexture(GL_TEXTURE_2D, color_texture.id)
     shader.uniformi('color_texture', 0)
 
-    pix = []
-    for x in range(256):
-        for y in range(128):
-            pix.append(random.randint(0,50))
-
-    pix = utils.vecb(*pix)
+    pix = utils.vecb(*complexity)
 
     glActiveTexture(GL_TEXTURE1)
     glEnable(GL_TEXTURE_2D)
@@ -107,7 +108,7 @@ def on_draw():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 128, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 128, 128, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
 
     shader.uniformi('disp_texture', 1)
     shader.uniformf('dispMagnitude', 0.2)
