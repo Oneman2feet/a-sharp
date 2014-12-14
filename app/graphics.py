@@ -61,10 +61,10 @@ def update(dt):
 
     time_since_prev_beat = elapsed_time - prev_beat
     local_spb = next_beat - prev_beat
-    bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
-    
-    # radius = 0.5 * sin(2*elapsed_time) + 1.5
-    radius = 1
+    beat_bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
+    beat_bump = 1 if beat_bump > 1 else beat_bump
+    radius = 1 + 0.2 * beat_bump
+
     diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
 
     ry += dt * 80
