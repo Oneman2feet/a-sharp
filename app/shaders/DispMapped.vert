@@ -1,6 +1,7 @@
 #version 110
 #extension GL_EXT_gpu_shader4 : require
 
+uniform sampler2D color_texture;
 uniform sampler2D disp_texture;
 
 uniform float dispMagnitude;

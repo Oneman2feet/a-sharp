@@ -62,7 +62,8 @@ def update(dt):
     local_spb = next_beat - prev_beat
     bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
     
-    radius = 0.5 * sin(2*elapsed_time) + 1.5
+    # radius = 0.5 * sin(2*elapsed_time) + 1.5
+    radius = 1
     diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
 
     ry += dt * 80
@@ -92,59 +93,38 @@ def on_draw():
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, color_texture.id)
     shader.uniformi('color_texture', 0)
-   
-    
-    #glBindTexture(GL_TEXTURE_2D, 4)
-    #glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 256, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, *pix )
-    #shader.uniformi('disp_texture', 1)
-
-
-    #im = Image.open('app/textures/disp_map.jpg')
-    #pix = im.load()
-    #for x in range(im.size[0]):
-    #    for y in range(im.size[1]):
-    #        pix[x, y] = 200
-    #im.save('app/textures/disp_map.jpg')
-    
-    #disp_file = 'disp_map.jpg'
-    #print "Loading Texture", disp_file
-    #textureSurface = pyglet.resource.texture(disp_file)
-    #disp_texture = textureSurface.get_texture()
-    #glBindTexture(disp_texture.target, disp_texture.id)
-    
-    #glActiveTexture(GL_TEXTURE0+1)
-    #glEnable(GL_TEXTURE_2D)
-    #glBindTexture(GL_TEXTURE_2D, disp_texture.id)
-    #shader.uniformi('disp_texture', 1)
-
 
     pix = []
     for x in range(256):
         for y in range(128):
-            pix.extend([0])
+            pix.append(100)
+    pix = utils.veci(*pix)
 
-    #data = np.zeros(256*128, 'f')+0.5
+    # data = np.zeros(256*128, 'f')+0.5
 
-    disp_tex_id = GLuint(0)
     glActiveTexture(GL_TEXTURE1)
     glEnable(GL_TEXTURE_2D)
-    glGenTextures(1, byref(disp_tex_id))
+    # glBindTexture(GL_TEXTURE_2D, disp_tex_id)
     glBindTexture(GL_TEXTURE_2D, disp_tex_id)
-    #glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    #glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 128, 0, GL_LUMINANCE, GL_INT, *pix)
-    #glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 128, GL_RGB, GL_FLOAT, *pix);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 128, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
     shader.uniformi('disp_texture', 1)
-    
+
+
     shader.uniformf('dispMagnitude', 0.2)
     shader.uniformf('elapsed_time', elapsed_time)
 
     mesh.draw()
 
-    #glActiveTexture(GL_TEXTURE1)
-    #glDisable(GL_TEXTURE_2D)
-    #glActiveTexture(GL_TEXTURE0)
-    #glDisable(GL_TEXTURE_2D)
+    glActiveTexture(GL_TEXTURE1)
+    glDisable(GL_TEXTURE_2D)
+    glActiveTexture(GL_TEXTURE0)
+    glDisable(GL_TEXTURE_2D)
 
     shader.unbind()
 
@@ -153,6 +133,7 @@ def setup():
     # One-time GL setup
     global light0pos, light1pos
     global color_texture, disp_texture, shader
+    global disp_tex_id
 
     vert_handle = open("app/shaders/DispMapped.vert")
     vert = ["".join([line for line in vert_handle])]
@@ -183,6 +164,9 @@ def setup():
     color_texture = textureSurface.get_texture()
     glBindTexture(color_texture.target, color_texture.id)
     print "Color texture bound to ", color_texture.id
+
+    disp_tex_id = GLuint(0)
+    glGenTextures(1, byref(disp_tex_id))
 
     #disp_file = 'disp_map.jpg'
     #print "Loading Texture", disp_file
