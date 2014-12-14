@@ -7,6 +7,7 @@ from PIL import Image
 import utils
 import pyglet
 import numpy as np
+import random
 
 
 try:
@@ -97,25 +98,23 @@ def on_draw():
     pix = []
     for x in range(256):
         for y in range(128):
-            pix.append(100)
+            pix.append(200)
+
     pix = utils.veci(*pix)
 
     # data = np.zeros(256*128, 'f')+0.5
 
     glActiveTexture(GL_TEXTURE1)
     glEnable(GL_TEXTURE_2D)
-    # glBindTexture(GL_TEXTURE_2D, disp_tex_id)
     glBindTexture(GL_TEXTURE_2D, disp_tex_id)
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 128, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 128, 256, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
+
     shader.uniformi('disp_texture', 1)
-
-
     shader.uniformf('dispMagnitude', 0.2)
     shader.uniformf('elapsed_time', elapsed_time)
 

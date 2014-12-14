@@ -1,6 +1,7 @@
 #version 110
 
 uniform sampler2D color_texture;
+uniform sampler2D disp_texture;
 uniform sampler2D normal_texture;
 uniform float elapsed_time;
 
@@ -13,13 +14,14 @@ uniform vec3 ambientLightIntensity;
 varying vec3 fN;
 varying vec4 worldPos;
 varying vec3 eyeVec;
+varying vec4 dispColor;
 
 
 void main() {
     // vec3 normalColor = texture2D(normal_texture, gl_TexCoord[0].st).rgb;
     // vec3 N = normalize(gl_NormalMatrix * ((normalColor * 2) - 1));
     vec3 N = normalize(fN);
-    vec3 V = normalize(-worldPos.xyz);
+    vec3 V = normalize(eyeVec);
 
     vec4 texColor = vec4(texture2D(color_texture, gl_TexCoord[0].st).rgb, 1.0);
 
@@ -55,5 +57,6 @@ void main() {
 
     finalColor += (Ispec + Idiff) / (r * r);
 
-    gl_FragColor = finalColor;
+    // gl_FragColor = finalColor;
+    gl_FragColor = dispColor;
 }

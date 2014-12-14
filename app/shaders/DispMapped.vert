@@ -7,15 +7,18 @@ uniform sampler2D disp_texture;
 uniform float dispMagnitude;
 uniform float bump;
 uniform float radius;
+uniform mat4 model;
 
 varying vec3 fN;
 varying vec4 worldPos;
 varying vec3 eyeVec;
+varying vec4 dispColor;
 
 void main() {
   gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
 
   float disp = texture2D(disp_texture, gl_TexCoord[0].st).g;
+  dispColor = texture2D(disp_texture, gl_TexCoord[0].st);
   // vec3 heights = dispColor;
   // float average = ((heights.x + heights.y + heights.z) / 3);
 
@@ -33,13 +36,14 @@ void main() {
   //   newPos = gl_Vertex + vec4(gl_Normal, 0) * bump * (1/2);
   // }
 
-  newPos = newPos + vec4(gl_Normal, 0) * disp;
 
-  worldPos = gl_ModelViewMatrix * newPos;
+  // newPos = newPos + vec4(gl_Normal, 0) * disp;
+
+  worldPos = newPos;
 
   eyeVec = -newPos.xyz;
 
-  gl_Position = gl_ProjectionMatrix * worldPos;
+  gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * worldPos;
 
   fN = normalize(gl_NormalMatrix * gl_Normal);
 }
