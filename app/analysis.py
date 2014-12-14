@@ -48,9 +48,14 @@ def complexity(y):
     np.abs(librosa.stft(y))
 
 
-def format_complexities(complexities):
-    return [ complexities[1:129] for a in np.arange(128) ]
-
+def average_pitch(frequency_amplitudes):
+    max_i = 0
+    max_v = frequency_amplitudes[0]
+    for i, amp in enumerate(frequency_amplitudes):
+        if amp>max_v:
+            max_i = i
+            max_v = amp
+    return max_i
 
 # formats analysis of sound file into a single easy-to-use dictionary
 # beats is a list of times in the sound file for which a beat event occurs
@@ -69,9 +74,15 @@ def gather_data(filename):
     frequencies = [[int(f[t] + 80) for f in log_S[30:-30]] for t in xrange(len(log_S[0])) if t % 30 == 0]
     tempo, beat_frames = librosa.beat.beat_track(y=y_percussive, sr=sr, hop_length=64)
     beats = [0] + [librosa.frames_to_time(beat, sr=sr, hop_length=64) for beat in beat_frames] + [dur]
+
+    # get the average pitches at each frame
+    avgpitches = [ average_pitch(freqs) for freqs in frequencies ]
+
+
     return {"beats": beats,
             "frequencies": frequencies,
-            "fframes": dur / len(frequencies)}
+            "fframes": dur / len(frequencies),
+            "translations": avgpitches }
 
 # main method, parses filename and analyses the sound
 if __name__ == '__main__':
