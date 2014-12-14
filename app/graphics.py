@@ -23,13 +23,22 @@ except pyglet.window.NoSuchConfigException:
 def initialize(_player, _mesh, _framerate, _beats, _amps, _comps):
     global elapsed_time, bump, bframe, ry, player, mesh, framerate
     global beats, amplitudes, complexities
+    global position, velocity, acceleration, k, m, translations, damping
     beats = _beats
     amplitudes = list(_amps)
-    complexities = list(_comps) * 128
+    complexities = list(_comps)
+    print "amplitues: " + str(len(amplitudes))
+    print "beats: " + str(len(beats))
+    print "complexities: " + str(len(complexities))
     mesh = _mesh
     player = _player
     framerate = _framerate
     elapsed_time = bump = ry = 0
+    position = velocity = acceleration = 0
+    translations = [sin(2 * pi * x / 100) for x in xrange(len(amplitudes))]
+    k = 2
+    m = 1
+    damping = 0.8
     bframe = 1
     pyglet.resource.path.append('textures')
     pyglet.resource.reindex()
@@ -70,20 +79,33 @@ def update(dt):
     beat_bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
     beat_bump = 1 if beat_bump > 1 else beat_bump
     amp_bump = 1 if amplitude > 1 else amplitude
-    radius = 1 + 0.2 * beat_bump + 0.2 * amp_bump
+    radius = 1 #+ 0.2 * beat_bump + 0.2 * amp_bump
 
     diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
 
 
 @window.event
 def on_draw():
+    global translations, k, m, position, velocity, acceleration
     player.playing = True
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
-    glTranslatef(0, 0, -4)
-    glRotatef(0, 0, 0, 1)
-    #glRotatef(ry, 0, 1, 0)
-    glRotatef(0, 1, 0, 0)
+    
+
+    translation = translations.pop(0)
+    force = k * (translation - position)
+    acceleration = force / (m * radius * radius)
+
+    velocity *= damping
+    velocity += acceleration * framerate
+    
+    position += velocity
+
+
+
+    glTranslatef(0, position, -4)
+    # glRotatef(0, 0, 0, 1)
+    # glRotatef(0, 1, 0, 0)
 
     glPolygonMode(GL_FRONT, GL_FILL)
 
@@ -98,17 +120,17 @@ def on_draw():
     glBindTexture(GL_TEXTURE_2D, color_texture.id)
     shader.uniformi('color_texture', 0)
 
-    pix = utils.vecb(*complexity)
+    # pix = utils.vecb(*complexity)
 
-    glActiveTexture(GL_TEXTURE1)
-    glEnable(GL_TEXTURE_2D)
-    glBindTexture(GL_TEXTURE_2D, disp_tex_id)
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 128, 128, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
+    # glActiveTexture(GL_TEXTURE1)
+    # glEnable(GL_TEXTURE_2D)
+    # glBindTexture(GL_TEXTURE_2D, disp_tex_id)
+    # glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+    # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+    # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+    # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    # glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 128, 128, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
 
     shader.uniformi('disp_texture', 1)
     shader.uniformf('dispMagnitude', 0.2)
