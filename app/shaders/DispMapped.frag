@@ -22,7 +22,8 @@ void main() {
     vec4 texColor = vec4(texture2D(color_texture, gl_TexCoord[0].st).rgb, 1.0);
 
     vec4 sceneColor = gl_FrontLightModelProduct.sceneColor;
-    vec4 rgb = vec4(texColor.rgb, 1.0);
+    // vec4 rgb = vec4(texColor.rgb, 1.0);
+    vec4 rgb = vec4(1.0, 1.0, 1.0, 1.0);
     
     vec4 finalColor = (sceneColor * rgb) +
         (gl_LightSource[0].ambient * rgb * vec4(diffuse_color, 1));

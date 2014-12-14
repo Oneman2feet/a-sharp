@@ -23,8 +23,8 @@ class Song(object):
 
 
 def queue(filename):
-        while True:
-            yield Song(filename)
+        # while True:
+        yield Song(filename)
 
 
 if __name__ == '__main__':
@@ -33,16 +33,16 @@ if __name__ == '__main__':
     parser.add_argument('-d', dest='duration', type=float, help='specify the duration of the sound file to be analyzed')
     args = parser.parse_args()
     framerate = 0.1  # change this to adjust video and audio analysis fr
-    song_info = gather_data(args.filename, framerate)
+    song_info = gather_data(args.filename)
 
     player = musicplayer.createPlayer()
     sphere = Sphere(100, 100)
 
-    graphics.initialize(player, sphere, framerate, song_info['beats'], song_info['amplitudes'], song_info['complexities'])
+    graphics.initialize(player, sphere, **song_info)
     graphics.setup()
 
     raw_input("Analysis complete. Press Enter to continue...\n")
 
     player.queue = queue(args.filename)
-    # player.playing = True
+    player.playing = True
     graphics.run()

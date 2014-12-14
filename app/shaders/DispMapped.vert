@@ -18,7 +18,7 @@ void main() {
 
   float disp = texture2D(disp_texture, gl_TexCoord[0].st).g;
   vec4 newPos = vec4(gl_Vertex.xyz * radius, gl_Vertex.w);
-  newPos = newPos + vec4(gl_Normal, 0) * disp;
+  newPos = newPos + vec4(gl_Normal, 0) * disp * 2.0;
 
   worldPos = newPos;
   eyeVec = -newPos.xyz;

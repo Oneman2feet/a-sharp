@@ -20,29 +20,27 @@ except pyglet.window.NoSuchConfigException:
     window = pyglet.window.Window(resizable=True)
 
 
-def initialize(_player, _mesh, _framerate, _beats, _amps, _comps):
-    global elapsed_time, bump, bframe, ry, player, mesh, framerate
-    global beats, amplitudes, complexities
+def initialize(_player, _mesh, **song_info):
+    global elapsed_time, bump, bframe, fframe, player, mesh, framerate
+    global beats, frequencies
     global position, velocity, acceleration, k, m, translations, damping
-    beats = _beats
-    amplitudes = list(_amps)
-    complexities = list(_comps)
-    print "amplitues: " + str(len(amplitudes))
-    print "beats: " + str(len(beats))
-    print "complexities: " + str(len(complexities))
+    beats = song_info['beats']
+    print beats
+    frequencies = [[f for f in time for _ in xrange(256)] for time in list(song_info['frequencies'])]
     mesh = _mesh
     player = _player
-    framerate = _framerate
+    framerate = song_info['fframes']
     elapsed_time = bump = ry = 0
     position = velocity = acceleration = 0
-    translations = [sin(2 * pi * x / 100) for x in xrange(len(amplitudes))]
+    translations = [sin(2 * pi * x / 100) for x in xrange(len(frequencies))]
     k = 2
     m = 1
     damping = 0.8
     bframe = 1
+    fframe = 1
     pyglet.resource.path.append('textures')
     pyglet.resource.reindex()
-    pyglet.clock.schedule_interval(update, framerate)
+    pyglet.clock.schedule(update)
 
 
 @window.event
@@ -57,29 +55,35 @@ def on_resize(width, height):
 
 
 def update(dt):
-    global elapsed_time, bump, bframe, radius, diffuse_color, complexity
+    global elapsed_time, bframe, fframe, radius, diffuse_color, cur_frequencies, framerate
     elapsed_time += dt
 
     next_beat = beats[bframe]
-    amplitude = amplitudes.pop(0)
-    complexity = complexities.pop(0)
+    cur_frequencies = frequencies[fframe]
 
-    if next_beat - elapsed_time < 0:
+    if next_beat < elapsed_time:
         bframe += 1
         if bframe == len(beats):
             pyglet.clock.unschedule(update)
-            pyglet.app.exit()
             return
         next_beat = beats[bframe]
 
     prev_beat = beats[bframe - 1]
 
+    if framerate * fframe < elapsed_time:
+        fframe += 1
+        if fframe == len(frequencies):
+            pyglet.clock.unschedule(update)
+            return
+        cur_frequencies = frequencies[fframe]
+
     time_since_prev_beat = elapsed_time - prev_beat
     local_spb = next_beat - prev_beat
     beat_bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
     beat_bump = 1 if beat_bump > 1 else beat_bump
-    amp_bump = 1 if amplitude > 1 else amplitude
-    radius = 1 #+ 0.2 * beat_bump + 0.2 * amp_bump
+
+    radius = 1 + 0.2 * beat_bump
+
 
     diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
 
@@ -103,11 +107,11 @@ def on_draw():
 
 
 
-    glTranslatef(0, position, -4)
+    glTranslatef(0, position, -6)
     # glRotatef(0, 0, 0, 1)
     # glRotatef(0, 1, 0, 0)
 
-    glPolygonMode(GL_FRONT, GL_FILL)
+    # glPolygonMode(GL_FRONT, GL_FILL)
 
     shader.bind()
 
@@ -120,17 +124,18 @@ def on_draw():
     glBindTexture(GL_TEXTURE_2D, color_texture.id)
     shader.uniformi('color_texture', 0)
 
-    # pix = utils.vecb(*complexity)
+    pix = utils.vecb(*cur_frequencies)
 
-    # glActiveTexture(GL_TEXTURE1)
-    # glEnable(GL_TEXTURE_2D)
-    # glBindTexture(GL_TEXTURE_2D, disp_tex_id)
-    # glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
-    # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-    # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
-    # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    # glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 128, 128, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
+    glActiveTexture(GL_TEXTURE1)
+    glEnable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, disp_tex_id)
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 256, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
+
 
     shader.uniformi('disp_texture', 1)
     shader.uniformf('dispMagnitude', 0.2)
