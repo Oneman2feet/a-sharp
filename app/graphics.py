@@ -163,18 +163,8 @@ def setup():
     glBindTexture(normal_texture.target, normal_texture.id)
     print "Normal texture bound to ", normal_texture.id
 
-    # Uncomment this line for a wireframe view
-    # glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-    # Simple light setup.  On Windows GL_LIGHT0 is enabled by default,
-    # but this is not the case on Linux or Mac, so remember to always
-    # include it.
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-    glEnable(GL_LIGHT1)
 
     light0pos = [5.0, 5.0, 5.0, 1.0]  # positional light !
     light1pos = [-5.0, 5.0, 5.0, 1.0]
@@ -183,11 +173,6 @@ def setup():
     glLightfv(GL_LIGHT0, GL_AMBIENT, utils.vecf(0.9, 0.9, 0.9, 1.0))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, utils.vecf(0.9, 0.9, 0.9, 1.0))
     glLightfv(GL_LIGHT0, GL_SPECULAR, utils.vecf(1.0, 1.0, 1.0, 1.0))
-
-    glLightfv(GL_LIGHT1, GL_POSITION, utils.vecf(*light1pos))
-    glLightfv(GL_LIGHT1, GL_AMBIENT, utils.vecf(0.1, 0.1, 0.1, 1.0))
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, utils.vecf(0.9, 0.9, 0.9, 1.0))
-    glLightfv(GL_LIGHT1, GL_SPECULAR, utils.vecf(1.0, 1.0, 1.0, 1.0))
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,
                  utils.vecf(0.5, 0.5, 0.5, 1.0))
