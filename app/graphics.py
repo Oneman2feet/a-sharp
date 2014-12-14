@@ -2,8 +2,11 @@ from __future__ import division
 from shader import Shader
 from pyglet.gl import *
 from math import cos, sin, pi
+from ctypes import *
+from PIL import Image
 import utils
 import pyglet
+import numpy as np
 
 
 try:
@@ -74,7 +77,7 @@ def on_draw():
     glLoadIdentity()
     glTranslatef(0, 0, -4)
     glRotatef(0, 0, 0, 1)
-    glRotatef(ry, 0, 1, 0)
+    #glRotatef(ry, 0, 1, 0)
     glRotatef(0, 1, 0, 0)
 
     glPolygonMode(GL_FRONT, GL_FILL)
@@ -83,33 +86,65 @@ def on_draw():
 
     shader.uniformf('bump', bump)
     shader.uniformf('radius', radius)
-    shader.uniformf('diffuse_r', diffuse_color[0])
-    shader.uniformf('diffuse_g', diffuse_color[1])
-    shader.uniformf('diffuse_b', diffuse_color[2])
+    shader.uniformf('diffuse_color', *diffuse_color)
 
     glActiveTexture(GL_TEXTURE0)
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, color_texture.id)
     shader.uniformi('color_texture', 0)
-    glActiveTexture(GL_TEXTURE0+1)
+   
+    
+    #glBindTexture(GL_TEXTURE_2D, 4)
+    #glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 256, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, *pix )
+    #shader.uniformi('disp_texture', 1)
+
+
+    #im = Image.open('app/textures/disp_map.jpg')
+    #pix = im.load()
+    #for x in range(im.size[0]):
+    #    for y in range(im.size[1]):
+    #        pix[x, y] = 200
+    #im.save('app/textures/disp_map.jpg')
+    
+    #disp_file = 'disp_map.jpg'
+    #print "Loading Texture", disp_file
+    #textureSurface = pyglet.resource.texture(disp_file)
+    #disp_texture = textureSurface.get_texture()
+    #glBindTexture(disp_texture.target, disp_texture.id)
+    
+    #glActiveTexture(GL_TEXTURE0+1)
+    #glEnable(GL_TEXTURE_2D)
+    #glBindTexture(GL_TEXTURE_2D, disp_texture.id)
+    #shader.uniformi('disp_texture', 1)
+
+
+    pix = []
+    for x in range(256):
+        for y in range(128):
+            pix.extend([0])
+
+    #data = np.zeros(256*128, 'f')+0.5
+
+    disp_tex_id = GLuint(0)
+    glActiveTexture(GL_TEXTURE1)
     glEnable(GL_TEXTURE_2D)
-    glBindTexture(GL_TEXTURE_2D, disp_texture.id)
+    glGenTextures(1, byref(disp_tex_id))
+    glBindTexture(GL_TEXTURE_2D, disp_tex_id)
+    #glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    #glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 128, 0, GL_LUMINANCE, GL_INT, *pix)
+    #glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 128, GL_RGB, GL_FLOAT, *pix);
     shader.uniformi('disp_texture', 1)
+    
     shader.uniformf('dispMagnitude', 0.2)
-    glActiveTexture(GL_TEXTURE0+2)
-    glEnable(GL_TEXTURE_2D)
-    glBindTexture(GL_TEXTURE_2D, disp_texture.id)
-    shader.uniformi('normal_texture', 2)
     shader.uniformf('elapsed_time', elapsed_time)
 
     mesh.draw()
 
-    glActiveTexture(GL_TEXTURE0+2)
-    glDisable(GL_TEXTURE_2D)
-    glActiveTexture(GL_TEXTURE0+1)
-    glDisable(GL_TEXTURE_2D)
-    glActiveTexture(GL_TEXTURE0)
-    glDisable(GL_TEXTURE_2D)
+    #glActiveTexture(GL_TEXTURE1)
+    #glDisable(GL_TEXTURE_2D)
+    #glActiveTexture(GL_TEXTURE0)
+    #glDisable(GL_TEXTURE_2D)
 
     shader.unbind()
 
@@ -125,7 +160,7 @@ def setup():
     frag = ["".join([line for line in frag_handle])]
     shader = Shader(vert, frag)
 
-    glClearColor(1, 1, 1, 1)
+    glClearColor(0, 0, 0, 1)
     glColor4f(1, 1, 1, 1)
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_CULL_FACE)
@@ -149,19 +184,19 @@ def setup():
     glBindTexture(color_texture.target, color_texture.id)
     print "Color texture bound to ", color_texture.id
 
-    disp_file = 'Texturemap1.jpg'
-    print "Loading Texture", disp_file
-    textureSurface = pyglet.resource.texture(disp_file)
-    disp_texture = textureSurface.get_texture()
-    glBindTexture(disp_texture.target, disp_texture.id)
-    print "Displacement texture bound to ", disp_texture.id
+    #disp_file = 'disp_map.jpg'
+    #print "Loading Texture", disp_file
+    #textureSurface = pyglet.resource.texture(disp_file)
+    #disp_texture = textureSurface.get_texture()
+    #glBindTexture(disp_texture.target, disp_texture.id)
+    #print "Displacement texture bound to ", disp_texture.id
 
-    normal_file = 'Texturemap2.jpg'
-    print "Loading Texture", normal_file
-    textureSurface = pyglet.resource.texture(normal_file)
-    normal_texture = textureSurface.get_texture()
-    glBindTexture(normal_texture.target, normal_texture.id)
-    print "Normal texture bound to ", normal_texture.id
+    #normal_file = 'Texturemap2.jpg'
+    #print "Loading Texture", normal_file
+    #textureSurface = pyglet.resource.texture(normal_file)
+    #normal_texture = textureSurface.get_texture()
+    #glBindTexture(normal_texture.target, normal_texture.id)
+    #print "Normal texture bound to ", normal_texture.id
 
     # Uncomment this line for a wireframe view
     # glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
