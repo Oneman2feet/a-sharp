@@ -24,11 +24,11 @@ def separate_fg_and_bg(y):
     return y_fg, y_bg
 
 
-def frames_to_time(beat_frame):
+def frames_to_time(frame):
     logging.info("About to convert a frame to a time")
-    beat_times = librosa.frames_to_time(beat_frame)
+    times = librosa.frames_to_time(frame)
     logging.info("Successfully converted frame.")
-    return beat_times
+    return times
 
 
 def beat_track(y):
@@ -45,19 +45,20 @@ def complexity(y):
     np.abs(librosa.stft(y))
 
 
-# quick amplitude function
-def amplitude_times(filename):
+
+
+# formats analysis of sound file into a single easy-to-use dictionary
+# beats is a list of the times in the sound file when a beat event occurs
+# amplitudes is a list of the amplitude of the sound at a given frame
+# complexities is a list of the complexity of the sound (as an array) at a given frame
+def gather_data(filename):
     y, sr = load_song(filename)
     y_harmonic, y_percussive = separate_fg_and_bg(y)
     amplitudes = amplitude(y_harmonic)
-    return amplitudes
-
-def complexities(filename):
-    y, sr = load_song(filename)
-    y_harmonic, y_percussive = separate_fg_and_bg(y)
     complexities = complexity(y_harmonic)
-    return complexities
-
+    tempo, beat_frames = beat_track(y_percussive)
+    beats = [ frames_to_time(beat) for beat in beat_frames ]
+    return { 'beats':beats, 'amplitudes':amplitudes, 'complexities':complexities }
 
 
 # main method, parses filename and analyses the sound
