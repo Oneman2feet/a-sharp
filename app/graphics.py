@@ -25,6 +25,7 @@ def initialize(_player, _mesh, **song_info):
     global beats, frequencies
     global position, velocity, acceleration, k, m, translations, damping
     beats = song_info['beats']
+    translations = song_info['translations']
     print beats
     frequencies = [[f for f in time for _ in xrange(256)] for time in list(song_info['frequencies'])]
     mesh = _mesh
@@ -32,9 +33,8 @@ def initialize(_player, _mesh, **song_info):
     framerate = song_info['fframes']
     elapsed_time = bump = ry = 0
     position = velocity = acceleration = 0
-    translations = [sin(2 * pi * x / 100) for x in xrange(len(frequencies))]
-    k = 2
-    m = 1
+    k = 0.5
+    m = 1.5
     damping = 0.8
     bframe = 1
     fframe = 1
@@ -96,7 +96,7 @@ def on_draw():
     glLoadIdentity()
     
 
-    translation = translations.pop(0)
+    translation = translations[fframe]
     force = k * (translation - position)
     acceleration = force / (m * radius * radius)
 
