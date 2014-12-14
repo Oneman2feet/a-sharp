@@ -41,13 +41,22 @@ def beat_track(y):
 def amplitude(y):
     return np.abs(y)
 
+def complexity(y):
+    np.abs(librosa.stft(y))
+
 
 # quick amplitude function
 def amplitude_times(filename):
     y, sr = load_song(filename)
     y_harmonic, y_percussive = separate_fg_and_bg(y)
-    amplitudes = [ amplitude(x) for x in y_harmonic ]
+    amplitudes = amplitude(y_harmonic)
     return amplitudes
+
+def complexities(filename):
+    y, sr = load_song(filename)
+    y_harmonic, y_percussive = separate_fg_and_bg(y)
+    complexities = complexity(y_harmonic)
+    return complexities
 
 
 
