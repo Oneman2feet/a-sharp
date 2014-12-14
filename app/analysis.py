@@ -55,7 +55,7 @@ def average_pitch(frequency_amplitudes):
         if amp>max_v:
             max_i = i
             max_v = amp
-    return max_i
+    return 2*max_i/len(frequency_amplitudes) - 1
 
 # formats analysis of sound file into a single easy-to-use dictionary
 # beats is a list of times in the sound file for which a beat event occurs
