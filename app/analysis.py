@@ -49,6 +49,7 @@ def complexity(y):
 
 
 def average_pitch(frequency_amplitudes):
+    '''
     max_i = 0
     max_v = frequency_amplitudes[0]
     for i, amp in enumerate(frequency_amplitudes):
@@ -56,6 +57,12 @@ def average_pitch(frequency_amplitudes):
             max_i = i
             max_v = amp
     return 2*max_i/len(frequency_amplitudes) - 1
+    '''
+    weighted_sum = np.sum([ i*x for i,x in enumerate(frequency_amplitudes) ])
+    num = np.sum(frequency_amplitudes)
+    if num!=0:
+        weighted_sum = weighted_sum / num
+    return 2 * weighted_sum / len(frequency_amplitudes) - 1
 
 # formats analysis of sound file into a single easy-to-use dictionary
 # beats is a list of times in the sound file for which a beat event occurs
