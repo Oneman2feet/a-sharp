@@ -105,7 +105,7 @@ def gather_data(filename):
 
     amplitudes = []
     for i in range(len(notes)):
-        amplitudes.append[0]
+        amplitudes.append(0)
         for t in notes[i]:
             amplitudes[i] += t
     base_key = key_finder(amplitudes)

@@ -26,7 +26,6 @@ def initialize(_player, _mesh, **song_info):
     global position, velocity, acceleration, k, m, translations, damping
     beats = song_info['beats']
     translations = song_info['translations']
-    print beats
     frequencies = [[f for f in time for _ in xrange(256)] for time in list(song_info['frequencies'])]
     mesh = _mesh
     player = _player
@@ -55,7 +54,7 @@ def on_resize(width, height):
 
 
 def update(dt):
-    global elapsed_time, bframe, fframe, radius, diffuse_color, cur_frequencies, framerate
+    global elapsed_time, bframe, fframe, radius, diffuse_color, cur_frequencies, framerate, loudness_bump
     elapsed_time += dt
 
     next_beat = beats[bframe]
@@ -81,9 +80,14 @@ def update(dt):
     local_spb = next_beat - prev_beat
     beat_bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
     beat_bump = 1 if beat_bump > 1 else beat_bump
+    
+    frequencyRange = []
+    for i in range(3):
+        frequencyRange.extend(frequencies[fframe + i - 1])
+    loudness = sum(frequencyRange) / len(frequencyRange)
+    loudness_bump = 0.02 * loudness
 
-    radius = 1 + 0.2 * beat_bump
-
+    radius = 1 + 0.2 * beat_bump + loudness_bump
 
     diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
 
@@ -107,7 +111,7 @@ def on_draw():
 
 
 
-    glTranslatef(0, position, -6)
+    glTranslatef(0, position, -8)
     # glRotatef(0, 0, 0, 1)
     # glRotatef(0, 1, 0, 0)
 
@@ -124,7 +128,7 @@ def on_draw():
     glBindTexture(GL_TEXTURE_2D, color_texture.id)
     shader.uniformi('color_texture', 0)
 
-    pix = utils.vecb(*cur_frequencies)
+    pix = utils.vecb(*[2 * x for x in cur_frequencies])
 
     glActiveTexture(GL_TEXTURE1)
     glEnable(GL_TEXTURE_2D)
