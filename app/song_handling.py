@@ -50,14 +50,14 @@ def peekQueue(n):
 
 
 def ffwd():
+    print "Called FFWD"
     global data_queue, player, results
 
-    player.playing = False
-    song_info = gather_data(files[i])
+    song_info = results.get()
     print "Got new song info"
 
+    print "Player {0} playing".format(player.playing)
     graphics.reset_globals(ffwd, **song_info)
-    player.playing = True
 
 
 def play(file_list, mesh):
@@ -71,7 +71,10 @@ def play(file_list, mesh):
     player.queue = queue()
     player.peekQueue = peekQueue
 
-    song_info = gather_data(files[0])
+    pool = Pool()
+    results = gather_datas(files)
+
+    song_info = results.get()
 
     graphics.initialize(player, mesh, ffwd, **song_info)
     graphics.setup()
