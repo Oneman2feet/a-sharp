@@ -48,9 +48,21 @@ def complexity(y):
     np.abs(librosa.stft(y))
 
 
-def format_complexities(complexities):
-    return [ complexities[1:129] for a in np.arange(128) ]
-
+def average_pitch(frequency_amplitudes):
+    '''
+    max_i = 0
+    max_v = frequency_amplitudes[0]
+    for i, amp in enumerate(frequency_amplitudes):
+        if amp>max_v:
+            max_i = i
+            max_v = amp
+    return 2*max_i/len(frequency_amplitudes) - 1
+    '''
+    weighted_sum = np.sum([ i*x for i,x in enumerate(frequency_amplitudes) ])
+    num = np.sum(frequency_amplitudes)
+    if num!=0:
+        weighted_sum = weighted_sum / num
+    return 2 * weighted_sum / len(frequency_amplitudes) - 1
 
 def key_finder_helper(amplitudes, depth, index):
     if index >= 0 and index < len(amplitudes):
@@ -90,15 +102,21 @@ def gather_data(filename):
     notes = librosa.feature.chromagram(y_harmonic, sr)
     tempo, beat_frames = librosa.beat.beat_track(y=y_percussive, sr=sr, hop_length=64)
     beats = [0] + [librosa.frames_to_time(beat, sr=sr, hop_length=64) for beat in beat_frames] + [dur]
+
     amplitudes = []
     for i in range(len(notes)):
         amplitudes.append[0]
         for t in notes[i]:
             amplitudes[i] += t
     base_key = key_finder(amplitudes)
+
+    # get the average pitches at each frame
+    avgpitches = [ average_pitch(freqs) for freqs in frequencies ]
+
     return {"beats": beats,
             "frequencies": frequencies,
-            "fframes": dur / len(frequencies)}
+            "fframes": dur / len(frequencies),
+            "translations": avgpitches }
 
 # main method, parses filename and analyses the sound
 if __name__ == '__main__':
