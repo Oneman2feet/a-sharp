@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage[top=1.2in, bottom=1in, left=2in, right=2in]{geometry}
+\usepackage{enumerate, multicol}
+\usepackage{amsmath}
+\usepackage{parskip}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+
+\textsc{\LARGE Cornell University}\\[1.5cm]
+
+\textsc{\Large CS 4621 Practicum Final Report}\\[0.5cm]
+
+% Title
+\HRule \\[0.4cm]
+{ \huge \bfseries A$\sharp$ -- Music Visualizer \\[0.4cm] }
+
+\HRule \\[1.5cm]
+
+% Group members
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+Shane \textsc{Moore} \\
+\emph{swm85}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+Zachary \textsc{Zimmerman} \\
+\emph{ztz3}
+\end{flushright}
+\end{minipage}
+\par\vspace{0.5cm}
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+Emre \textsc{Findik} \\
+\emph{ef343}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+Joseph \textsc{Vinegrad} \\
+\emph{jav86}
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+% Bottom of the page
+{\large December 15, 2014}
+
+\end{center}
+
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Summary}
+
+Our group worked on a music visualizer called A$\sharp$ (A Sharp). While typical visualizers have nice intricate displays, we feel that they do not meet the standards of a music visualizer in the true sense of the term. Our visualizer attemps to create a more accurate representation of the actual features of a song.
+
+The visualizer models a song using a single sphere. We animate this sphere through sets of transformations based on data analysis from a song. In particular, our application analyzes features of a song, inlcluding beats and frequency amplitudes. Then, we use beats and overall amplitude to alter the sphere radius and frequency amplitudes to perform displacements on the surface of the sphere. We are also in the early stages of applying vertical translations based on changes in frequency, as well as choosing color based on the mood of a song.
+
+
+\section{Implementation}
+
+For our graphics pipeline, we wrote vertex and fragment shaders for our sphere to set positional and color data. After receiving data for each frame from the sound analysis, we set the radius of the sphere according to beat pulse and sound amplitude. Then, we use frequency amplitude data to set displacement magnitudes. We dynamically create a texture map using this data at each frame. Essentially, the objective here is to displace higher points on the sphere according to the amplitudes of high frequencies, and lower points on the sphere according to the amplitudes of low frequencies. Finally we set shader uniforms based on the computed radius and texture map at each frame.
+
+
+\end{document}
