@@ -45,7 +45,6 @@ def initialize(_player, _mesh, **song_info):
     global player, mesh, position, velocity
     global max_color, mid_color, min_color
     global max_color_index, mid_color_index, min_color_index
-    global mid_color_limit, min_color_limit
 
     # initialize constants
     DAMPING_FORCE   = 0.8
@@ -83,7 +82,7 @@ def initialize(_player, _mesh, **song_info):
 
     # set the limits in change in mid_color and min_color - max_color stays constant
     mid_color_limit = (max_color - mid_color) / 2
-    min_color_limit = (max_color - min_color) / 2
+    min_color_limit = (max_color - min_color) / 2.5
 
     # set update function
     pyglet.clock.schedule(update)
@@ -99,7 +98,6 @@ def update(dt):
     global elapsed_time, beat_index, frame
     global max_color, mid_color, min_color
     global max_color_index, mid_color_index, min_color_index
-    global mid_color_limit, min_color_limit
 
     # keep track of time
     elapsed_time += dt
@@ -146,11 +144,10 @@ def update(dt):
     # set sphere color
     color = [None, None, None]
     color[max_color_index] = max_color
-    print color[max_color_index]
-    color[mid_color_index] = abs(mid_color + mid_color_limit * cos(elapsed_time / 1.9))
-    print color[mid_color_index]
-    color[min_color_index] = abs(min_color - min_color_limit * cos(elapsed_time / 3.5))
-    print color[min_color_index]
+    mid_color_temp = abs(mid_color + 0.25 * cos(2*pi*((frame*framerate/(32*beat_period))+0.5)))
+    color[mid_color_index] = mid_color_temp if mid_color_temp <= 1.0 else 1.0
+    min_color_temp = abs(min_color + 0.15 * cos(2*pi*(frame*framerate/(32*beat_period))))
+    color[min_color_index] = min_color_temp if min_color_temp <= 1.0 else 1.0
 
     # calculate new position
     force = SPRING_CONSTANT * (cur_translation - position)

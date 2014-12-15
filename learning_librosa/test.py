@@ -29,9 +29,9 @@ if __name__=='__main__':
 
     print "beginning analysis"
     y, sr = load_song(args.filename, args.duration)
-    D = np.abs(librosa.stft(y))
+    #D = np.abs(librosa.stft(y))
     C = librosa.feature.chromagram(y, sr)
-    CQT = librosa.cqt(y, sr=sr)
+    #CQT = librosa.cqt(y, sr=sr)
 
     # Visualize an STFT with linear/log frequency scaling
     # librosa.display.specshow(D, sr=sr, y_axis='log')
@@ -43,7 +43,7 @@ if __name__=='__main__':
     # librosa.display.specshow(D, sr=sr, hop_length=hop_length, x_axis='time')
 
     # Draw a chromagram with pitch classes
-    # librosa.display.specshow(C, y_axis='chroma')
+    librosa.display.specshow(C, y_axis='chroma')
 
     # Force a grayscale colormap (white -> black)
     # librosa.display.specshow(librosa.logamplitude(D), cmap='OrRd')
@@ -52,10 +52,10 @@ if __name__=='__main__':
 
 
     # trying to visualize spectogram
-    plt.plot(D[0],  color="r")
-    plt.plot(D[10], color="g")
-    plt.plot(D[20], color="b")
-    plt.plot(D[200], color="y")
+    #plt.plot(D[0],  color="r")
+    #plt.plot(D[10], color="g")
+    #plt.plot(D[20], color="b")
+    #plt.plot(D[200], color="y")
 
 
     print "about to display"
