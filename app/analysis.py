@@ -4,21 +4,85 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-'''
-Formats the analysis of a sound file into a single easy-to-use dictionary!
+def key_finder(amplitudes):
+    '''
+    Finds the key of the piece whose amplitude sums per frequency are
+    supplied as the argument.
+    
+    Coefficients for the tonic, subdominant and dominant are based on
+    http://ismir2004.ismir.net/proceedings/p018-page-92-paper164.pdf. The
+    average of the corresponding coefficients in the two graphs under the
+    section "TONALITY COMPUTATION USING A COGNITION-INSPIRED MODEL" is used.
+    '''
+    
+    result = []
+    for index in range(len(amplitudes)):
+        result.append(amplitudes[index] * 0.91 + amplitudes[(
+            index + 4) % 12] * 0.44 + amplitudes[(index + 5) % 12] * 0.89)
+    return result.index(max(result))
 
-filename: the path to the sound file to be analyzed
 
-returns: a dictionary with lots of juicy info!
-{
-    "beats"       : a list of times at which a beat event occurs
-    "framerate"   : the size of a frame in seconds
-    "numframes"   : the total number of frames
-    "frequencies" : a list of frequency spectrums (256 bins) at each frame
-    "elevations"  : a list of the relative pitch heights of each frame 
-}
-'''
+def major_score(amplitudes, base_key, amplitude_sum):
+    '''
+    Based on http://ismir2004.ismir.net/proceedings/p018-page-92-paper164.pdf.
+    The coefficients corresponding to each scale degree are the average of the
+    corresponding coefficients in the two graphs under the section "TONALITY
+    COMPUTATION USING A COGNITION-INSPIRED MODEL." 5.29 and 5.59 are the sums of
+    those coefficients for major_score and minor_score respectively.
+    '''
+
+    return (amplitudes[base_key] - 0.91 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 1) % 12] - 0.18 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 2) % 12] - 0.54 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 3) % 12] - 0.19 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 4) % 12] - 0.6 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 5) % 12] - 0.47 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 6) % 12] - 0.24 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 7) % 12] - 0.91 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 8) % 12] - 0.19 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 9) % 12] - 0.47 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 10) % 12] - 0.18 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 11) % 12] - 0.41 * 5.29 * amplitude_sum) ** 2.0
+    
+    
+def minor_score(amplitudes, base_key, amplitude_sum):
+    '''
+    Based on http://ismir2004.ismir.net/proceedings/p018-page-92-paper164.pdf.
+    The coefficients corresponding to each scale degree are the average of the
+    corresponding coefficients in the two graphs under the section "TONALITY
+    COMPUTATION USING A COGNITION-INSPIRED MODEL." 5.29 and 5.59 are the sums of
+    those coefficients for major_score and minor_score respectively.
+    '''
+    
+    return (amplitudes[base_key] * 0.9 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 1) % 12] * 0.22 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 2) % 12] * 0.53 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 3) % 12] * 0.69 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 4) % 12] * 0.21 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 5) % 12] * 0.41 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 6) % 12] * 0.24 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 7) % 12] * 0.87 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 8) % 12] * 0.46 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 9) % 12] * 0.25 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 10) % 12] * 0.31 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 11) % 12] * 0.41 * 5.59 * amplitude_sum) ** 2.0
+
+
 def gather_data(filename):
+    '''
+    Formats the analysis of a sound file into a single easy-to-use dictionary!
+    
+    filename: the path to the sound file to be analyzed
+    
+    returns: a dictionary with lots of juicy info!
+    {
+        "beats"       : a list of times at which a beat event occurs
+        "framerate"   : the size of a frame in seconds
+        "numframes"   : the total number of frames
+        "frequencies" : a list of frequency spectrums (256 bins) at each frame
+        "elevations"  : a list of the relative pitch heights of each frame 
+    }
+    '''
     print "Gathering song data..."
 
     # get our song
@@ -50,13 +114,35 @@ def gather_data(filename):
 
     # get the elevation at each frame
     elevations = [ elevation(freqs) for freqs in frequencies ]
+    
+    # set the list of amplitudes for each semitone
+    chromagram = librosa.feature.chromagram(y_harmonic, sr)
+    amplitudes = []
+    for i in range(len(chromagram)):
+        amplitudes.append(0)
+        for t in chromagram[i]:
+            amplitudes[i] += t
+
+    # get the key of the whole audio
+    base_key = key_finder(amplitudes)
+    
+    # get the base colors for the sphere
+    amplitude_sum = 0.0
+    for amplitude in amplitudes:
+        amplitude_sum += amplitude
+    base_red, base_green, base_blue = mood_finder(majorScore(
+        amplitudes, base_key, amplitude_sum) > minorScore(
+        amplitudes, base_key, amplitude_sum), tempo)
 
     return {
         "beats": beats,
         "framerate": framerate,
         "numframes": numframes,
         "frequencies": frequencies,
-        "elevations": elevations
+        "elevations": elevations,
+        "base_red": base_red,
+        "base_green": base_green,
+        "base_blue": base_blue
     }
 
 
