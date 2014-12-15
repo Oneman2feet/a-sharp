@@ -31,18 +31,18 @@ def major_score(amplitudes, base_key, amplitude_sum):
     COMPUTATION USING A COGNITION-INSPIRED MODEL." 5.29 and 5.59 are the sums of
     those coefficients for major_score and minor_score respectively.
     '''
-    return abs(amplitudes[base_key] - (0.91 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key +  1) % 12] - (0.18 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key +  2) % 12] - (0.54 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key +  3) % 12] - (0.19 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key +  4) % 12] - (0.60 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key +  5) % 12] - (0.47 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key +  6) % 12] - (0.24 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key +  7) % 12] - (0.91 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key +  8) % 12] - (0.19 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key +  9) % 12] - (0.47 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key + 10) % 12] - (0.18 / 5.29) * amplitude_sum) + abs(
-        amplitudes[(base_key + 11) % 12] - (0.41 / 5.29) * amplitude_sum)
+    return abs(amplitudes[base_key] - (1.0 / 6.20) * amplitude_sum) + abs(
+        amplitudes[(base_key +  1) % 12] - (0.36 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key +  2) % 12] - (0.54 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key +  3) % 12] - (0.19 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key +  4) % 12] - (0.68 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key +  5) % 12] - (0.64 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key +  6) % 12] - (0.40 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key +  7) % 12] - (0.82 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key +  8) % 12] - (0.19 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key +  9) % 12] - (0.57 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key + 10) % 12] - (0.36 / 6.2) * amplitude_sum) + abs(
+        amplitudes[(base_key + 11) % 12] - (0.45 / 6.2) * amplitude_sum)
 
 
 def minor_score(amplitudes, base_key, amplitude_sum):
@@ -53,18 +53,18 @@ def minor_score(amplitudes, base_key, amplitude_sum):
     COMPUTATION USING A COGNITION-INSPIRED MODEL." 5.29 and 5.59 are the sums of
     those coefficients for major_score and minor_score respectively.
     '''
-    return (amplitudes[base_key] - (0.9 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key +  1) % 12] - (0.22 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key +  2) % 12] - (0.53 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key +  3) % 12] - (0.69 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key +  4) % 12] - (0.21 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key +  5) % 12] - (0.41 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key +  6) % 12] - (0.24 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key +  7) % 12] - (0.87 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key +  8) % 12] - (0.46 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key +  9) % 12] - (0.25 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key + 10) % 12] - (0.31 / 5.59) * amplitude_sum) + abs(
-        amplitudes[(base_key + 11) % 12] - (0.41 / 5.59) * amplitude_sum)
+    return abs(amplitudes[base_key] - (1.0 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key +  1) % 12] - (0.43 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key +  2) % 12] - (0.55 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key +  3) % 12] - (0.84 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key +  4) % 12] - (0.21 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key +  5) % 12] - (0.55 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key +  6) % 12] - (0.40 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key +  7) % 12] - (0.74 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key +  8) % 12] - (0.63 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key +  9) % 12] - (0.22 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key + 10) % 12] - (0.53 / 6.6) * amplitude_sum) + abs(
+        amplitudes[(base_key + 11) % 12] - (0.50 / 6.6) * amplitude_sum)
 
 
 # returns a tuple representing the base HSV color
