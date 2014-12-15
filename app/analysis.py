@@ -2,6 +2,7 @@ from __future__ import division
 import librosa
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 
 '''
@@ -18,17 +19,17 @@ returns: a dictionary with lots of juicy info!
     "elevations"  : a list of the relative pitch heights of each frame 
 }
 '''
-def gather_data(filename, data_queue):
-    print "Gathering song data..."
+def gather_data(filename):
+    print "Gathering song data on {0}...".format(filename)
     # get our song
     y, sr = librosa.load(filename)
-
+    print "Loaded song"
     # separate the foreground and background
     y_harmonic, y_percussive = librosa.effects.hpss(y)
-
+    print "Separated foreground and background"
     # compute the frequency spectrum
     S = librosa.feature.melspectrogram(y, sr=sr, n_fft=2048, hop_length=64, n_mels=316)
-
+    print "Computed frequency spectrum"
     # Convert to log scale (dB) using the peak power as a reference
     log_S = librosa.logamplitude(S, ref_power=np.max)
 
@@ -46,17 +47,18 @@ def gather_data(filename, data_queue):
     # calculate the times of each beat event
     tempo, beat_frames = librosa.beat.beat_track(y=y_percussive, sr=sr, hop_length=64)
     beats = [0] + [librosa.frames_to_time(b, sr=sr, hop_length=64) for b in beat_frames] + [dur]
-
+    print "Calculated beats"
     # get the elevation at each frame
     elevations = [ elevation(freqs) for freqs in frequencies ]
 
-    data_queue.put({
+    song_info = {
         "beats": beats,
         "framerate": framerate,
         "numframes": numframes,
         "frequencies": frequencies,
         "elevations": elevations
-    })
+    }
+    return song_info
 
 
 # computes the height of the average pitch on a scale of -1 to 1
@@ -65,23 +67,3 @@ def elevation(frequency_amplitudes):
     size = np.sum(frequency_amplitudes)
     if size!=0: weighted_sum = weighted_sum / size
     return 2 * weighted_sum / len(frequency_amplitudes) - 1
-
-if __name__ == '__main__':
-    y, sr = librosa.load("../foxes/Fox.m4a")
-
-    S = librosa.feature.melspectrogram(y, sr=sr, n_fft=2048, hop_length=64, n_mels=256)
-    log_S = librosa.logamplitude(S, ref_power=np.max)
-
-    plt.figure(figsize=(12,4))
-
-    librosa.display.specshow(log_S, sr=sr, hop_length=64, x_axis='time', y_axis='mel')
-
-    plt.title('mel power spectrogram')
-
-    # draw a color bar
-    plt.colorbar(format='%+02.0f dB')
-
-    # Make the figure layout compact
-    plt.tight_layout()
-
-    plt.show()

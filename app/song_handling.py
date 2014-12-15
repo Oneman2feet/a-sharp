@@ -1,6 +1,7 @@
-from threading import Thread
+from multiprocessing import Pool
 from Queue import Queue
 from analysis import gather_data
+import os
 import graphics
 import musicplayer
 
@@ -22,63 +23,55 @@ class Song(object):
 
 
 def gather_datas(files):
-    global thread_queue, data_queue
+    global pool, data_queue
 
     for filename in files:
-        t = Thread(target=gather_data, args=(filename, data_queue))
-        thread_queue.put(t)
-        t.start()
+        results = pool.apply_async(gather_data, (filename,))
+    return results
 
 
 def queue():
     global song_info, player, data_queue, thread_queue, files, i
 
-    while True:
+    while i < len(files):
         print "Yielding next song {0}".format(files[0])
         yield Song(files[i])
         i += 1
-        if i == len(files): graphics.exit()
+    graphics.exit()
 
 
 def peekQueue(n):
     global files, i
 
     nexti = i + 1
-    if nexti >= len(files): nexti = 0
+    if nexti >= len(files):
+        return None
     return map(Song, (files[nexti:] + files[:nexti])[:n])
 
 
 def ffwd():
-    print "Called FFWD"
-    global thread_queue, data_queue, player
+    global data_queue, player, results
 
-    t = thread_queue.get()
-    t.join()
-    song_info = data_queue.get()
+    player.playing = False
+    song_info = gather_data(files[i])
     print "Got new song info"
 
-    print "Player {0} playing".format(player.playing)
     graphics.reset_globals(ffwd, **song_info)
+    player.playing = True
 
 
 def play(file_list, mesh):
-    global thread_queue, data_queue, player, files, i
+    global pool, data_queue, player, files, i, results
 
     i = 0
 
     files = file_list
-    data_queue = Queue()
-    thread_queue = Queue()
+    print files
     player = musicplayer.createPlayer()
     player.queue = queue()
     player.peekQueue = peekQueue
-    # player.onSongChange = ffwd
 
-    gather_datas(files)
-
-    t = thread_queue.get()
-    t.join()
-    song_info = data_queue.get()
+    song_info = gather_data(files[0])
 
     graphics.initialize(player, mesh, ffwd, **song_info)
     graphics.setup()

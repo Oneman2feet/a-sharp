@@ -7,11 +7,15 @@ import argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process a sound file.')
-    parser.add_argument('dirname', type=str, help='the path to the sound file')
-    parser.add_argument('-d', dest='duration', type=float, help='specify the duration of the sound file to be analyzed')
+    parser.add_argument('dirname', type=str, help='the path to the sound file directory')
+    parser.add_argument('--cache', dest='cache', action='store_true', help='if flag is on, do not play songs, simply store their analyses')
+    parser.add_argument('--play', dest='cache', action='store_false', help='if flag is on, do not play songs, simply store their analyses')
     args = parser.parse_args()
 
     file_list = [args.dirname + f for f in os.listdir(args.dirname)]
-    sphere = Sphere(100, 100)
+    if args.cache:
+        interface.cache(file_list)
+    else:
+        sphere = Sphere(100, 100)
 
-    interface.play(file_list, sphere)
+        interface.play(file_list, sphere)
