@@ -134,15 +134,15 @@ def gather_data(filename):
         amplitudes, base_key, amplitude_sum) > minorScore(
         amplitudes, base_key, amplitude_sum), tempo)
 
+    base_colors = [ base_red, base_green, base_blue ]
+
     return {
         "beats": beats,
         "framerate": framerate,
         "numframes": numframes,
         "frequencies": frequencies,
         "elevations": elevations,
-        "base_red": base_red,
-        "base_green": base_green,
-        "base_blue": base_blue
+        "base_colors": base_colors,
     }
 
 

@@ -61,7 +61,7 @@ def initialize(_player, _mesh, **song_info):
     numframes    = song_info['numframes']
     frequencies  = song_info['frequencies']
     translations = song_info['elevations']
-    base_colors = [song_info['base_red'], song_info['base_green'], song_info['base_blue']]
+    base_colors  = song_info['base_colors']
     
     # rank the colors according to their values
     sorted_color_indexes = np.argsort(base_colors)
