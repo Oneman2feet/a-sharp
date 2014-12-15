@@ -9,15 +9,6 @@ Formats the analysis of a sound file into a single easy-to-use dictionary!
 
 filename: the path to the sound file to be analyzed
 
-<<<<<<< HEAD
-# formats analysis of sound file into a single easy-to-use dictionary
-# beats is a list of times in the sound file for which a beat event occurs
-# amplitudes is a list of the amplitude of the sound at a given frame
-# complexities is a 2d texture list of the complexity of the sound at a given frame
-# times is a list of times when each frame occurs
-def gather_data(filename, data_queue):
-    print "Gathering Data on {0}".format(filename)
-=======
 returns: a dictionary with lots of juicy info!
 {
     "beats"       : a list of times at which a beat event occurs
@@ -27,6 +18,8 @@ returns: a dictionary with lots of juicy info!
 }
 '''
 def gather_data(filename):
+    print "Gathering song data..."
+
     # get our song
     y, sr = librosa.load(filename)
 
@@ -41,6 +34,9 @@ def gather_data(filename):
 
     # format the frequencies into a list of 256 amplitudes at each frame
     frequencies = [[int(f[t]+80) for f in log_S[30:-30]] for t in xrange(len(log_S[0])) if t%30==0]
+
+    # repeat each value 256 times
+    frequencies = [[f for f in frame for _ in xrange(256)] for frame in frequencies]
 
     # get the framerate of the frequencies
     dur = librosa.get_duration(y)

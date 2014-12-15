@@ -10,24 +10,38 @@ import numpy as np
 import random
 
 
+
+# Try and create a window with multisampling (antialiasing)
 try:
-    # Try and create a window with multisampling (antialiasing)
-    config = Config(sample_buffers=1, samples=4,
-                    depth_size=16, double_buffer=True,)
+    config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True)
     window = pyglet.window.Window(resizable=True, config=config)
+
+# Fall back to no multisampling for old hardware
 except pyglet.window.NoSuchConfigException:
-    # Fall back to no multisampling for old hardware
     window = pyglet.window.Window(resizable=True)
 
+# Override the default on_resize handler to create a 3D projection
+@window.event
+def on_resize(width, height):
+    glViewport(0, 0, width, height)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(60., width / float(height), .1, 1000.)
+    glMatrixMode(GL_MODELVIEW)
+    return pyglet.event.EVENT_HANDLED
 
+
+
+# TODO: document
 def initialize(_player, _mesh, **song_info):
-    print not not song_info
     global elapsed_time, bump, bframe, fframe, player, mesh, framerate
     global beats, frequencies
     global position, velocity, acceleration, k, m, translations, damping
+
+    # retrieve data from song
     beats = song_info['beats']
     translations = song_info['elevations']
-    frequencies = [[f for f in time for _ in xrange(256)] for time in list(song_info['frequencies'])]
+    frequencies = song_info['frequencies']
     mesh = _mesh
     player = _player
     framerate = song_info['framerate']
@@ -41,18 +55,6 @@ def initialize(_player, _mesh, **song_info):
     pyglet.resource.path.append('textures')
     pyglet.resource.reindex()
     pyglet.clock.schedule(update)
-    print "Initialized"
-
-
-@window.event
-def on_resize(width, height):
-    # Override the default on_resize handler to create a 3D projection
-    glViewport(0, 0, width, height)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(60., width / float(height), .1, 1000.)
-    glMatrixMode(GL_MODELVIEW)
-    return pyglet.event.EVENT_HANDLED
 
 
 def update(dt):
@@ -107,7 +109,6 @@ def on_draw():
     player.playing = True
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
-    
     force = k * (translation - position)
     acceleration = force / (m * radius * radius)
 
