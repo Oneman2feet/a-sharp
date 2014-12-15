@@ -54,18 +54,18 @@ def minor_score(amplitudes, base_key, amplitude_sum):
     those coefficients for major_score and minor_score respectively.
     '''
     
-    return (amplitudes[base_key] * 0.9 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 1) % 12] * 0.22 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 2) % 12] * 0.53 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 3) % 12] * 0.69 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 4) % 12] * 0.21 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 5) % 12] * 0.41 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 6) % 12] * 0.24 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 7) % 12] * 0.87 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 8) % 12] * 0.46 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 9) % 12] * 0.25 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 10) % 12] * 0.31 * 5.59 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 11) % 12] * 0.41 * 5.59 * amplitude_sum) ** 2.0
+    return (amplitudes[base_key] - 0.9 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 1) % 12] - 0.22 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 2) % 12] - 0.53 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 3) % 12] - 0.69 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 4) % 12] - 0.21 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 5) % 12] - 0.41 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 6) % 12] - 0.24 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 7) % 12] - 0.87 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 8) % 12] - 0.46 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 9) % 12] - 0.25 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 10) % 12] - 0.31 * 5.59 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key + 11) % 12] - 0.41 * 5.59 * amplitude_sum) ** 2.0
 
 
 # returns a tuple representing the base HSV color
@@ -74,10 +74,10 @@ def mood_finder(isMajor, tempo):
     tempo2 = -60.0 if tempo < 40.0 else (90.0 if tempo > 190.0 else tempo - 100.0)
     value += tempo2 / 300.0
     tempo2 += 60.0
-    red = int(round((tempo2 / 150.0) * value * 255.0))
+    red = (tempo2 / 150.0) * 255.0
     green = 0 if not isMajor else int(round((red * value)))
-    blue = int(round((1.0 - red) * value * 255.0))
-    return red, green, blue
+    blue = 255.0 - red
+    return int(round(red * value)), green, int(round(blue * value))
 
 
 def gather_data(filename):
@@ -142,11 +142,15 @@ def gather_data(filename):
     amplitude_sum = 0.0
     for amplitude in amplitudes:
         amplitude_sum += amplitude
-    base_red, base_green, base_blue = mood_finder(majorScore(
-        amplitudes, base_key, amplitude_sum) > minorScore(
+    print major_score(amplitudes, base_key, amplitude_sum)
+    print minor_score(amplitudes, base_key, amplitude_sum)
+    base_red, base_green, base_blue = mood_finder(major_score(
+        amplitudes, base_key, amplitude_sum) > minor_score(
         amplitudes, base_key, amplitude_sum), tempo)
 
     base_colors = [ base_red, base_green, base_blue ]
+
+    print "tempo: %d" % tempo
 
     return {
         "beats": beats,

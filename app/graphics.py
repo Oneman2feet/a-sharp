@@ -43,6 +43,9 @@ def initialize(_player, _mesh, **song_info):
     global beats, framerate, numframes, frequencies, translations
     global elapsed_time, beat_index, frame
     global player, mesh, position, velocity
+    global max_color, mid_color, min_color
+    global max_color_index, mid_color_index, min_color_index
+    global mid_color_limit, min_color_limit
 
     # initialize constants
     DAMPING_FORCE   = 0.8
@@ -62,19 +65,25 @@ def initialize(_player, _mesh, **song_info):
     frequencies  = song_info['frequencies']
     translations = song_info['elevations']
     base_colors  = song_info['base_colors']
-    
+
+    print base_colors
+
     # rank the colors according to their values
     sorted_color_indexes = np.argsort(base_colors)
-    max_color_index = sorted_color_indexes.pop()
-    mid_color_index = sorted_color_indexes.pop()
-    min_color_index = sorted_color_indexes.pop()
+    max_color_index = sorted_color_indexes[2]
+    mid_color_index = sorted_color_indexes[1]
+    min_color_index = sorted_color_indexes[0]
     max_color = base_colors[max_color_index]
     mid_color = base_colors[mid_color_index]
     min_color = base_colors[min_color_index]
-    
+
+    print max_color
+    print mid_color
+    print min_color
+
     # set the limits in change in mid_color and min_color - max_color stays constant
-    mid_color_limit = max((max_color - mid_color) / 2.5, mid_color)
-    min_color_limit = max((max_color - min_color) / 2.5, min_color)
+    mid_color_limit = (max_color - mid_color) / 2
+    min_color_limit = (max_color - min_color) / 2
 
     # set update function
     pyglet.clock.schedule(update)
@@ -88,6 +97,9 @@ def update(dt):
     global beats, framerate, numframes, frequencies, translations
     global position, velocity, radius, color, cur_frequencies
     global elapsed_time, beat_index, frame
+    global max_color, mid_color, min_color
+    global max_color_index, mid_color_index, min_color_index
+    global mid_color_limit, min_color_limit
 
     # keep track of time
     elapsed_time += dt
@@ -132,11 +144,13 @@ def update(dt):
     radius = 1 + beat_bump + loudness_bump
 
     # set sphere color
-    
     color = [None, None, None]
     color[max_color_index] = max_color
-    color[mid_color_index] = mid_color + mid_color_limit * cos(elapsed_time / 1.9)
-    color[min_color_index] = min_color - min_color_limit * cos(elapsed_time / 3.5)
+    print color[max_color_index]
+    color[mid_color_index] = abs(mid_color + mid_color_limit * cos(elapsed_time / 1.9))
+    print color[mid_color_index]
+    color[min_color_index] = abs(min_color - min_color_limit * cos(elapsed_time / 3.5))
+    print color[min_color_index]
 
     # calculate new position
     force = SPRING_CONSTANT * (cur_translation - position)
