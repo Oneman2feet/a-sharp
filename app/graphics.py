@@ -78,7 +78,8 @@ def update(dt):
 
     time_since_prev_beat = elapsed_time - prev_beat
     local_spb = next_beat - prev_beat
-    beat_bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
+    bump_size = 4
+    beat_bump = abs(local_spb/2 - time_since_prev_beat)**2 * bump_size
     beat_bump = 1 if beat_bump > 1 else beat_bump
     
     frequencyRange = []
@@ -87,7 +88,7 @@ def update(dt):
     loudness = sum(frequencyRange) / len(frequencyRange)
     loudness_bump = 0.02 * loudness
 
-    radius = 1 + 0.2 * beat_bump + loudness_bump
+    radius = 1 + beat_bump + loudness_bump
 
     diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
 
