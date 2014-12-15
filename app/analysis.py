@@ -32,15 +32,15 @@ def major_score(amplitudes, base_key, amplitude_sum):
     '''
 
     return (amplitudes[base_key] - 0.91 * 5.29 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 1) % 12] - 0.18 * 5.29 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 2) % 12] - 0.54 * 5.29 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 3) % 12] - 0.19 * 5.29 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 4) % 12] - 0.6 * 5.29 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 5) % 12] - 0.47 * 5.29 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 6) % 12] - 0.24 * 5.29 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 7) % 12] - 0.91 * 5.29 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 8) % 12] - 0.19 * 5.29 * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 9) % 12] - 0.47 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key +  1) % 12] - 0.18 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key +  2) % 12] - 0.54 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key +  3) % 12] - 0.19 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key +  4) % 12] - 0.6 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key +  5) % 12] - 0.47 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key +  6) % 12] - 0.24 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key +  7) % 12] - 0.91 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key +  8) % 12] - 0.19 * 5.29 * amplitude_sum) ** 2.0 + (
+        amplitudes[(base_key +  9) % 12] - 0.47 * 5.29 * amplitude_sum) ** 2.0 + (
         amplitudes[(base_key + 10) % 12] - 0.18 * 5.29 * amplitude_sum) ** 2.0 + (
         amplitudes[(base_key + 11) % 12] - 0.41 * 5.29 * amplitude_sum) ** 2.0
     
