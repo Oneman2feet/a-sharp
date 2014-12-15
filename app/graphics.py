@@ -22,11 +22,11 @@ except pyglet.window.NoSuchConfigException:
 
 def initialize(_player, _mesh, **song_info):
     global elapsed_time, bump, bframe, fframe, player, mesh, framerate
-    global beats, frequencies
+    global beats, frequencies, colors
     global position, velocity, acceleration, k, m, translations, damping
     beats = song_info['beats']
     translations = song_info['translations']
-    print beats
+    colors = song_info['colors']
     frequencies = [[f for f in time for _ in xrange(256)] for time in list(song_info['frequencies'])]
     mesh = _mesh
     player = _player
@@ -85,7 +85,8 @@ def update(dt):
     radius = 1 + 0.2 * beat_bump
 
 
-    diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
+    # diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
+    diffuse_color = colors[fframe]
 
 
 @window.event

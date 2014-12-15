@@ -79,9 +79,23 @@ def key_finder(amplitudes):
 
 def mood(chromas):
     important_notes = np.array(chromas).argsort()[::-1]
-    a = important_notes[1]
-    b = important_notes[2]
-    print np.abs(a-b)
+    a = important_notes[0]
+    b = important_notes[1]
+    c = important_notes[2]
+    colors = {
+         1: [ 255, 255, 255],
+         2: [ 155, 0, 0],
+         3: [ 0, 0, 255],
+         4: [ 0, 255, 0],
+         5: [ 255, 255, 0],
+         6: [ 255, 0, 0],
+         7: [ 255, 255, 255],
+         8: [ 0, 0, 255],
+         9: [ 0, 255, 0],
+        10: [ 255, 0, 0],
+        11: [ 155, 0, 0]
+    }
+    return colors[np.abs(a-b)]
 
 
 # formats analysis of sound file into a single easy-to-use dictionary
@@ -108,12 +122,16 @@ def gather_data(filename):
     chromagram = librosa.feature.chromagram(y=y_harmonic, sr=sr, n_fft=2048, hop_length=64)
     moods = [ mood([ chroma[t] for chroma in chromagram ]) for t in xrange(len(chromagram[0])) if t % 30 == 0]
 
+
+
+    '''
     amplitudes = []
     for i in range(len(chromagram)):
         amplitudes.append[0]
         for t in notes[i]:
             amplitudes[i] += t
     base_key = key_finder(amplitudes)
+    '''
 
     return {"beats": beats,
             "frequencies": frequencies,
