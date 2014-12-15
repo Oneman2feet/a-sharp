@@ -144,13 +144,10 @@ def update(dt):
     # set sphere color
     color = [None, None, None]
     color[max_color_index] = max_color
-    print color[max_color_index]
     mid_color_temp = abs(mid_color + 0.25 * cos(2*pi*((frame*framerate/(32*beat_period))+0.5)))
     color[mid_color_index] = mid_color_temp if mid_color_temp <= 1.0 else 1.0
-    print color[mid_color_index]
     min_color_temp = abs(min_color + 0.15 * cos(2*pi*(frame*framerate/(32*beat_period))))
     color[min_color_index] = min_color_temp if min_color_temp <= 1.0 else 1.0
-    print color[min_color_index]
 
     # calculate new position
     force = SPRING_CONSTANT * (cur_translation - position)

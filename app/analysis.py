@@ -18,7 +18,7 @@ def key_finder(amplitudes):
     result = []
     for index in range(len(amplitudes)):
         result.append(amplitudes[index] * 0.91 + amplitudes[(
-            index + 4) % 12] * 0.44 + amplitudes[(index + 5) % 12] * 0.89)
+            index + 5) % 12] * 0.44 + amplitudes[(index + 7) % 12] * 0.89)
         print result[index]
     return result.index(max(result))
 
@@ -31,21 +31,20 @@ def major_score(amplitudes, base_key, amplitude_sum):
     COMPUTATION USING A COGNITION-INSPIRED MODEL." 5.29 and 5.59 are the sums of
     those coefficients for major_score and minor_score respectively.
     '''
+    return abs(amplitudes[base_key] - (0.91 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key +  1) % 12] - (0.18 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key +  2) % 12] - (0.54 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key +  3) % 12] - (0.19 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key +  4) % 12] - (0.60 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key +  5) % 12] - (0.47 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key +  6) % 12] - (0.24 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key +  7) % 12] - (0.91 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key +  8) % 12] - (0.19 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key +  9) % 12] - (0.47 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key + 10) % 12] - (0.18 / 5.29) * amplitude_sum) + abs(
+        amplitudes[(base_key + 11) % 12] - (0.41 / 5.29) * amplitude_sum)
 
-    return (amplitudes[base_key] - (0.91 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  1) % 12] - (0.18 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  2) % 12] - (0.54 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  3) % 12] - (0.19 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  4) % 12] - (0.60 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  5) % 12] - (0.47 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  6) % 12] - (0.24 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  7) % 12] - (0.91 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  8) % 12] - (0.19 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  9) % 12] - (0.47 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 10) % 12] - (0.18 / 5.29) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 11) % 12] - (0.41 / 5.29) * amplitude_sum) ** 2.0
-    
-    
+
 def minor_score(amplitudes, base_key, amplitude_sum):
     '''
     Based on http://ismir2004.ismir.net/proceedings/p018-page-92-paper164.pdf.
@@ -54,19 +53,18 @@ def minor_score(amplitudes, base_key, amplitude_sum):
     COMPUTATION USING A COGNITION-INSPIRED MODEL." 5.29 and 5.59 are the sums of
     those coefficients for major_score and minor_score respectively.
     '''
-    
-    return (amplitudes[base_key] - (0.9 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  1) % 12] - (0.22 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  2) % 12] - (0.53 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  3) % 12] - (0.69 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  4) % 12] - (0.21 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  5) % 12] - (0.41 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  6) % 12] - (0.24 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  7) % 12] - (0.87 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  8) % 12] - (0.46 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key +  9) % 12] - (0.25 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 10) % 12] - (0.31 / 5.59) * amplitude_sum) ** 2.0 + (
-        amplitudes[(base_key + 11) % 12] - (0.41 / 5.59) * amplitude_sum) ** 2.0
+    return (amplitudes[base_key] - (0.9 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key +  1) % 12] - (0.22 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key +  2) % 12] - (0.53 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key +  3) % 12] - (0.69 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key +  4) % 12] - (0.21 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key +  5) % 12] - (0.41 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key +  6) % 12] - (0.24 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key +  7) % 12] - (0.87 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key +  8) % 12] - (0.46 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key +  9) % 12] - (0.25 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key + 10) % 12] - (0.31 / 5.59) * amplitude_sum) + abs(
+        amplitudes[(base_key + 11) % 12] - (0.41 / 5.59) * amplitude_sum)
 
 
 # returns a tuple representing the base HSV color
@@ -134,7 +132,7 @@ def gather_data(filename):
     elevations = [ elevation(freqs) for freqs in frequencies ]
     
     # set the list of amplitudes for each semitone
-    chromagram = librosa.feature.chromagram(y_harmonic, sr)
+    chromagram = librosa.feature.chromagram(y, sr)
     amplitudes = []
     for i in range(len(chromagram)):
         amplitudes.append(0)
@@ -152,12 +150,10 @@ def gather_data(filename):
     print major_score(amplitudes, base_key, amplitude_sum)
     print minor_score(amplitudes, base_key, amplitude_sum)
     base_red, base_green, base_blue = mood_finder(major_score(
-        amplitudes, base_key, amplitude_sum) > minor_score(
+        amplitudes, base_key, amplitude_sum) < minor_score(
         amplitudes, base_key, amplitude_sum), tempo)
 
     base_colors = [ base_red, base_green, base_blue ]
-
-    print "tempo: %d" % tempo
 
     return {
         "beats": beats,
