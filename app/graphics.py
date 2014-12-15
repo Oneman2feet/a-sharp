@@ -10,6 +10,9 @@ import numpy as np
 import random
 
 
+'''
+Creates a window to display the visualization
+'''
 
 # Try and create a window with multisampling (antialiasing)
 try:
@@ -32,104 +35,118 @@ def on_resize(width, height):
 
 
 
-# TODO: document
+'''
+Initializes global variables and schedules the update function
+'''
 def initialize(_player, _mesh, **song_info):
-    global elapsed_time, bump, bframe, fframe, player, mesh, framerate
-    global beats, frequencies
-    global position, velocity, acceleration, k, m, translations, damping
+    global DAMPING_FORCE, SPRING_CONSTANT, SPHERE_DENSITY
+    global beats, framerate, numframes, frequencies, translations
+    global elapsed_time, beat_index, frame
+    global player, mesh, position, velocity
 
-    # retrieve data from song
-    beats = song_info['beats']
-    translations = song_info['elevations']
-    frequencies = song_info['frequencies']
+    # initialize constants
+    DAMPING_FORCE   = 0.8
+    SPRING_CONSTANT = 0.5
+    SPHERE_DENSITY  = 1.5
+
+    # initialize variables
+    elapsed_time = position = velocity = 0
+    beat_index = frame = 1
     mesh = _mesh
     player = _player
-    framerate = song_info['framerate']
-    elapsed_time = bump = ry = 0
-    position = velocity = acceleration = 0
-    k = 0.5
-    m = 1.5
-    damping = 0.8
-    bframe = 1
-    fframe = 1
-    pyglet.resource.path.append('textures')
-    pyglet.resource.reindex()
+
+    # retrieve data from the song
+    beats        = song_info['beats']
+    framerate    = song_info['framerate']
+    numframes    = song_info['numframes']
+    frequencies  = song_info['frequencies']
+    translations = song_info['elevations']
+
+    # set update function
     pyglet.clock.schedule(update)
 
 
+
+'''
+Update sphere properties based on sound analysis
+'''
 def update(dt):
-    global elapsed_time, bframe, fframe, radius, diffuse_color, cur_frequencies, framerate, loudness_bump
-    global player, translation
-    player.playing = True
+    global beats, framerate, numframes, frequencies, translations
+    global position, velocity, radius, color, cur_frequencies
+    global elapsed_time, beat_index, frame
+
+    # keep track of time
     elapsed_time += dt
 
-    next_beat = beats[bframe]
-    cur_frequencies = frequencies[fframe]
-    translation = translations[fframe]
-
-    if next_beat < elapsed_time:
-        bframe += 1
-        if bframe == len(beats):
+    # update the current frame
+    if framerate*frame < elapsed_time:
+        frame += 1
+        # stop the updates on the last frame
+        if frame == numframes:
             pyglet.clock.unschedule(update)
             return
-        next_beat = beats[bframe]
 
-    prev_beat = beats[bframe - 1]
-
-    if framerate * fframe < elapsed_time:
-        fframe += 1
-        if fframe == len(frequencies):
+    # update beat when the next beat is reached
+    if beats[beat_index] < elapsed_time:
+        beat_index += 1
+        # stop the updates on the last beat
+        if beat_index == len(beats):
             pyglet.clock.unschedule(update)
             return
-        cur_frequencies = frequencies[fframe]
 
+    # set the current values of data to look at
+    next_beat       = beats[beat_index]
+    cur_frequencies = frequencies[frame]
+    cur_translation = translations[frame]
+
+    # get the previous beat time
+    prev_beat = beats[beat_index-1]
+
+    # calculate beat bump
     time_since_prev_beat = elapsed_time - prev_beat
-    local_spb = next_beat - prev_beat
+    beat_period = next_beat - prev_beat
     bump_size = 4
-    beat_bump = abs(local_spb/2 - time_since_prev_beat)**2 * bump_size
+    beat_bump = abs(beat_period/2 - time_since_prev_beat)**2 * bump_size
     beat_bump = 1 if beat_bump > 1 else beat_bump
 
-    frequencyRange = []
-    if fframe  < len(frequencies):
-        frequencyRange = [freq for freq_ls in frequencies[fframe - 1:fframe + 2] for freq in freq_ls]
-    else:
-        frequencyRange = [freq for freq_ls in frequencies[fframe - 1:fframe + 1] for freq in freq_ls]
+    # calculate loudness bump
+    frequencyRange = [freq for freq_ls in frequencies[frame - 1:frame + 2] for freq in freq_ls]
     loudness = sum(frequencyRange) / len(frequencyRange)
     loudness_bump = 0.02 * loudness
 
+    # set sphere radius
     radius = 1 + beat_bump + loudness_bump
 
-    diffuse_color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
+    # set sphere color
+    color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
 
-
-@window.event
-def on_draw():
-    global translations, k, m, position, velocity, acceleration
-    global player
-    player.playing = True
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glLoadIdentity()
-    force = k * (translation - position)
-    acceleration = force / (m * radius * radius)
-
-    velocity *= damping
+    # calculate new position
+    force = SPRING_CONSTANT * (cur_translation - position)
+    acceleration = force / (SPHERE_DENSITY * radius * radius)
+    velocity *= DAMPING_FORCE
     velocity += acceleration * framerate
-    
     position += velocity
 
 
+'''
+Set sphere properties to most current calculations
+'''
+@window.event
+def on_draw():
+    global position, radius, color, cur_frequencies
+    global player, mesh
+
+    player.playing = True
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
 
     glTranslatef(0, position, -8)
-    # glRotatef(0, 0, 0, 1)
-    # glRotatef(0, 1, 0, 0)
-
-    # glPolygonMode(GL_FRONT, GL_FILL)
 
     shader.bind()
-
-    shader.uniformf('bump', bump)
+    shader.uniformf('bump', 0)
     shader.uniformf('radius', radius)
-    shader.uniformf('diffuse_color', *diffuse_color)
+    shader.uniformf('diffuse_color', *color)
 
     pix = utils.vecb(*[2 * x for x in cur_frequencies])
 

@@ -13,6 +13,7 @@ returns: a dictionary with lots of juicy info!
 {
     "beats"       : a list of times at which a beat event occurs
     "framerate"   : the size of a frame in seconds
+    "numframes"   : the total number of frames
     "frequencies" : a list of frequency spectrums (256 bins) at each frame
     "elevations"  : a list of the relative pitch heights of each frame 
 }
@@ -40,7 +41,8 @@ def gather_data(filename):
 
     # get the framerate of the frequencies
     dur = librosa.get_duration(y)
-    framerate = dur / len(frequencies)
+    numframes = len(frequencies)
+    framerate = dur / numframes
 
     # calculate the times of each beat event
     tempo, beat_frames = librosa.beat.beat_track(y=y_percussive, sr=sr, hop_length=64)
@@ -52,6 +54,7 @@ def gather_data(filename):
     return {
         "beats": beats,
         "framerate": framerate,
+        "numframes": numframes,
         "frequencies": frequencies,
         "elevations": elevations
     }
