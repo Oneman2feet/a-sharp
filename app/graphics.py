@@ -148,7 +148,7 @@ def on_draw():
     shader.uniformf('radius', radius)
     shader.uniformf('diffuse_color', *color)
 
-    pix = utils.vecb(*[2 * x for x in cur_frequencies])
+    pix = utils.vecb(*[4 * x for x in cur_frequencies])
 
     glActiveTexture(GL_TEXTURE0)
     glEnable(GL_TEXTURE_2D)
