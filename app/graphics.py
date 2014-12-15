@@ -25,11 +25,11 @@ def initialize(_player, _mesh, **song_info):
     global beats, frequencies
     global position, velocity, acceleration, k, m, translations, damping
     beats = song_info['beats']
-    translations = song_info['translations']
+    translations = song_info['elevations']
     frequencies = [[f for f in time for _ in xrange(256)] for time in list(song_info['frequencies'])]
     mesh = _mesh
     player = _player
-    framerate = song_info['fframes']
+    framerate = song_info['framerate']
     elapsed_time = bump = ry = 0
     position = velocity = acceleration = 0
     k = 0.5
