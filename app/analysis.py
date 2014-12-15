@@ -68,6 +68,18 @@ def minor_score(amplitudes, base_key, amplitude_sum):
         amplitudes[(base_key + 11) % 12] * 0.41 * 5.59 * amplitude_sum) ** 2.0
 
 
+# returns a tuple representing the base HSV color
+def mood_finder(isMajor, tempo):
+    value = 0.7 if isMajor else 0.5
+    tempo2 = -60.0 if tempo < 40.0 else (90.0 if tempo > 190.0 else tempo - 100.0)
+    value += tempo2 / 300.0
+    tempo2 += 60.0
+    red = int(round((tempo2 / 150.0) * value * 255.0))
+    green = 0 if not isMajor else int(round((red * value)))
+    blue = int(round((1.0 - red) * value * 255.0))
+    return red, green, blue
+
+
 def gather_data(filename):
     '''
     Formats the analysis of a sound file into a single easy-to-use dictionary!
