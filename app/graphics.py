@@ -21,6 +21,7 @@ except pyglet.window.NoSuchConfigException:
 
 
 def initialize(_player, _mesh, **song_info):
+    print not not song_info
     global elapsed_time, bump, bframe, fframe, player, mesh, framerate
     global beats, frequencies
     global position, velocity, acceleration, k, m, translations, damping
@@ -40,6 +41,7 @@ def initialize(_player, _mesh, **song_info):
     pyglet.resource.path.append('textures')
     pyglet.resource.reindex()
     pyglet.clock.schedule(update)
+    print "Initialized"
 
 
 @window.event
@@ -55,10 +57,13 @@ def on_resize(width, height):
 
 def update(dt):
     global elapsed_time, bframe, fframe, radius, diffuse_color, cur_frequencies, framerate, loudness_bump
+    global player, translation
+    player.playing = True
     elapsed_time += dt
 
     next_beat = beats[bframe]
     cur_frequencies = frequencies[fframe]
+    translation = translations[fframe]
 
     if next_beat < elapsed_time:
         bframe += 1
@@ -80,10 +85,12 @@ def update(dt):
     local_spb = next_beat - prev_beat
     beat_bump = abs(local_spb/2 - time_since_prev_beat)**2 * 5
     beat_bump = 1 if beat_bump > 1 else beat_bump
-    
+
     frequencyRange = []
-    for i in range(3):
-        frequencyRange.extend(frequencies[fframe + i - 1])
+    if fframe  < len(frequencies):
+        frequencyRange = [freq for freq_ls in frequencies[fframe - 1:fframe + 2] for freq in freq_ls]
+    else:
+        frequencyRange = [freq for freq_ls in frequencies[fframe - 1:fframe + 1] for freq in freq_ls]
     loudness = sum(frequencyRange) / len(frequencyRange)
     loudness_bump = 0.02 * loudness
 
@@ -95,12 +102,11 @@ def update(dt):
 @window.event
 def on_draw():
     global translations, k, m, position, velocity, acceleration
+    global player
     player.playing = True
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     
-
-    translation = translations[fframe]
     force = k * (translation - position)
     acceleration = force / (m * radius * radius)
 
@@ -123,14 +129,9 @@ def on_draw():
     shader.uniformf('radius', radius)
     shader.uniformf('diffuse_color', *diffuse_color)
 
-    glActiveTexture(GL_TEXTURE0)
-    glEnable(GL_TEXTURE_2D)
-    glBindTexture(GL_TEXTURE_2D, color_texture.id)
-    shader.uniformi('color_texture', 0)
-
     pix = utils.vecb(*[2 * x for x in cur_frequencies])
 
-    glActiveTexture(GL_TEXTURE1)
+    glActiveTexture(GL_TEXTURE0)
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, disp_tex_id)
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
@@ -140,8 +141,7 @@ def on_draw():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 256, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pix)
 
-
-    shader.uniformi('disp_texture', 1)
+    shader.uniformi('disp_texture', 0)
     shader.uniformf('dispMagnitude', 0.2)
     shader.uniformf('elapsed_time', elapsed_time)
 
@@ -183,13 +183,6 @@ def setup():
     # include it.
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
-
-    color_file = 'bluesphere.jpg'
-    print "Loading Texture", color_file
-    textureSurface = pyglet.resource.texture(color_file)
-    color_texture = textureSurface.get_texture()
-    glBindTexture(color_texture.target, color_texture.id)
-    print "Color texture bound to ", color_texture.id
 
     disp_tex_id = GLuint(0)
     glGenTextures(1, byref(disp_tex_id))

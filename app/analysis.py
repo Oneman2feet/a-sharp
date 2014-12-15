@@ -89,7 +89,8 @@ def key_finder(amplitudes):
 # amplitudes is a list of the amplitude of the sound at a given frame
 # complexities is a 2d texture list of the complexity of the sound at a given frame
 # times is a list of times when each frame occurs
-def gather_data(filename):
+def gather_data(filename, data_queue):
+    print "Gathering Data on {0}".format(filename)
     y, sr = librosa.load(filename)
     dur = librosa.get_duration(y)
     y_harmonic, y_percussive = librosa.effects.hpss(y)
@@ -102,7 +103,6 @@ def gather_data(filename):
     notes = librosa.feature.chromagram(y_harmonic, sr)
     tempo, beat_frames = librosa.beat.beat_track(y=y_percussive, sr=sr, hop_length=64)
     beats = [0] + [librosa.frames_to_time(beat, sr=sr, hop_length=64) for beat in beat_frames] + [dur]
-
     amplitudes = []
     for i in range(len(notes)):
         amplitudes.append(0)
@@ -113,10 +113,10 @@ def gather_data(filename):
     # get the average pitches at each frame
     avgpitches = [ average_pitch(freqs) for freqs in frequencies ]
 
-    return {"beats": beats,
-            "frequencies": frequencies,
-            "fframes": dur / len(frequencies),
-            "translations": avgpitches }
+    data_queue.put({"beats": beats,
+                    "frequencies": frequencies,
+                    "fframes": dur / len(frequencies),
+                    "translations": avgpitches})
 
 # main method, parses filename and analyses the sound
 if __name__ == '__main__':
