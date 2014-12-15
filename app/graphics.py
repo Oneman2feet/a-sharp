@@ -61,16 +61,30 @@ def initialize(_player, _mesh, **song_info):
     numframes    = song_info['numframes']
     frequencies  = song_info['frequencies']
     translations = song_info['elevations']
+    base_colors = [song_info['base_red'], song_info['base_green'], song_info['base_blue']]
+    
+    # rank the colors according to their values
+    sorted_color_indexes = np.argsort(base_colors)
+    max_color_index = sorted_color_indexes.pop()
+    mid_color_index = sorted_color_indexes.pop()
+    min_color_index = sorted_color_indexes.pop()
+    max_color = base_colors[max_color_index]
+    mid_color = base_colors[mid_color_index]
+    min_color = base_colors[min_color_index]
+    
+    # set the limits in change in mid_color and min_color - max_color stays constant
+    mid_color_limit = max((max_color - mid_color) / 2.5, mid_color)
+    min_color_limit = max((max_color - min_color) / 2.5, min_color)
 
     # set update function
     pyglet.clock.schedule(update)
 
 
-
-'''
-Update sphere properties based on sound analysis
-'''
 def update(dt):
+    '''
+    Update sphere properties based on sound analysis
+    '''
+    
     global beats, framerate, numframes, frequencies, translations
     global position, velocity, radius, color, cur_frequencies
     global elapsed_time, beat_index, frame
@@ -118,7 +132,11 @@ def update(dt):
     radius = 1 + beat_bump + loudness_bump
 
     # set sphere color
-    color = [0.5 * cos(elapsed_time/2) + 0.5, -0.5 * cos(elapsed_time/2) + 0.5, 0]
+    
+    color = [None, None, None]
+    color[max_color_index] = max_color
+    color[mid_color_index] = mid_color + mid_color_limit * cos(elapsed_time / 1.9)
+    color[min_color_index] = min_color - min_color_limit * cos(elapsed_time / 3.5)
 
     # calculate new position
     force = SPRING_CONSTANT * (cur_translation - position)
