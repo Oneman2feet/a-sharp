@@ -23,6 +23,7 @@ try:
 except pyglet.window.NoSuchConfigException:
     window = pyglet.window.Window(resizable=True)
 
+
 # Override the default on_resize handler to create a 3D projection
 @window.event
 def on_resize(width, height):
@@ -34,11 +35,10 @@ def on_resize(width, height):
     return pyglet.event.EVENT_HANDLED
 
 
-
-'''
-Initializes global variables and schedules the update function
-'''
-def initialize(_player, _mesh, **song_info):
+def initialize(_player, _mesh, ffwd, **song_info):
+    '''
+    Initializes global variables and schedules the update function
+    '''
     global DAMPING_FORCE, SPRING_CONSTANT, SPHERE_DENSITY
     global beats, framerate, numframes, frequencies, translations
     global elapsed_time, beat_index, frame
@@ -63,14 +63,33 @@ def initialize(_player, _mesh, **song_info):
     translations = song_info['elevations']
 
     # set update function
-    pyglet.clock.schedule(update)
+    pyglet.clock.schedule(update, ffwd)
 
 
+def reset_globals(ffwd, **song_info):
+    global beats, framerate, numframes, frequencies, translations
+    global elapsed_time, beat_index, frame
+    global position, velocity
 
-'''
-Update sphere properties based on sound analysis
-'''
-def update(dt):
+    # initialize variables
+    elapsed_time = position = velocity = 0
+    beat_index = frame = 1
+
+    # retrieve data from the song
+    beats        = song_info['beats']
+    framerate    = song_info['framerate']
+    numframes    = song_info['numframes']
+    frequencies  = song_info['frequencies']
+    translations = song_info['elevations']
+
+    # set update function
+    pyglet.clock.schedule(update, ffwd)
+
+
+def update(dt, ffwd):
+    '''
+    Update sphere properties based on sound analysis
+    '''
     global beats, framerate, numframes, frequencies, translations
     global position, velocity, radius, color, cur_frequencies
     global elapsed_time, beat_index, frame
@@ -84,6 +103,7 @@ def update(dt):
         # stop the updates on the last frame
         if frame == numframes:
             pyglet.clock.unschedule(update)
+            ffwd()
             return
 
     # update beat when the next beat is reached
@@ -92,6 +112,7 @@ def update(dt):
         # stop the updates on the last beat
         if beat_index == len(beats):
             pyglet.clock.unschedule(update)
+            ffwd()
             return
 
     # set the current values of data to look at
@@ -224,3 +245,7 @@ def setup():
 
 def run():
     pyglet.app.run()
+
+
+def exit():
+    pyglet.app.exit()

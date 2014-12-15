@@ -18,9 +18,8 @@ returns: a dictionary with lots of juicy info!
     "elevations"  : a list of the relative pitch heights of each frame 
 }
 '''
-def gather_data(filename):
+def gather_data(filename, data_queue):
     print "Gathering song data..."
-
     # get our song
     y, sr = librosa.load(filename)
 
@@ -51,13 +50,13 @@ def gather_data(filename):
     # get the elevation at each frame
     elevations = [ elevation(freqs) for freqs in frequencies ]
 
-    return {
+    data_queue.put({
         "beats": beats,
         "framerate": framerate,
         "numframes": numframes,
         "frequencies": frequencies,
         "elevations": elevations
-    }
+    })
 
 
 # computes the height of the average pitch on a scale of -1 to 1
@@ -66,3 +65,23 @@ def elevation(frequency_amplitudes):
     size = np.sum(frequency_amplitudes)
     if size!=0: weighted_sum = weighted_sum / size
     return 2 * weighted_sum / len(frequency_amplitudes) - 1
+
+if __name__ == '__main__':
+    y, sr = librosa.load("../foxes/Fox.m4a")
+
+    S = librosa.feature.melspectrogram(y, sr=sr, n_fft=2048, hop_length=64, n_mels=256)
+    log_S = librosa.logamplitude(S, ref_power=np.max)
+
+    plt.figure(figsize=(12,4))
+
+    librosa.display.specshow(log_S, sr=sr, hop_length=64, x_axis='time', y_axis='mel')
+
+    plt.title('mel power spectrogram')
+
+    # draw a color bar
+    plt.colorbar(format='%+02.0f dB')
+
+    # Make the figure layout compact
+    plt.tight_layout()
+
+    plt.show()
