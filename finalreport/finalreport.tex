@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{parskip}
 \usepackage{hyperref}
+\usepackage[superscript,biblabel]{cite}
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 \newcommand{\code}{\texttt}
@@ -81,6 +82,14 @@ In order to achieve an intuitive representation of the chosen song, the conceptu
     \item Mood is conveyed by the color of the object
 \end{itemize}
 
+\subsection{Mood}
+
+The decision to correlate the mood of a song with the object's color is partly inspired by condition known as synesthesia, in which signals from a particular sense (smell, sight etc.) invoke perceptions in another sense. It has also been found that those without synesthesia may associate sounds with colors \cite{tsang}, though they would not directly perceive them.
+
+The greatest challenge is procedurally quantifying the mood and assigning it a color, for which there is no clear answer. Attempting to discover frequency patterns for particular moods did not seem conclusive, however, approximating the mood based on tempo and tonality brought reasonable results. The findings on the effect of tempo on mood are not consistent throughout (Husain \cite{husain} and Tsang \cite{tsang}), thus a level of arbitration is needed to represent moods through tempo to achieve parallelism with the moods considered in Bresin \cite{bresin}.
+
+To simplify the mood detection algorithm for more reliable results, four moods were picked from among the ones mentioned in Bresin's table of colors: sadness, happiness, love and anger. None of the given moods had a significant correlation with color saturation and value, except for anger which had an observed negative correlation with saturation --- this correlation was decidedly not implemented due to aesthetic concerns. However, both tempo and tonality were correlated with color value according to the conclusions reached by Tsang and Bresin respectively.
+
 \section{Sound Analysis}
 
 Sound analysis takes place as a pre-processing stage, before the visualization is run. The sound data is collected in the module \code{analysis.py}. Much of the waveform analysis is done with the help of the audio and music processing library \href{https://github.com/bmcfee/librosa/}{LibROSA}.
@@ -95,7 +104,7 @@ The data received from LibROSA includes:
     \item Chromagram (amplitude of each pitch-class over time)
 \end{itemize}
 
-From this initial data collection, more information about the song is gleaned. The frequency spectrum is truncated to a reasonable range and formatted as a displacement texture for the sphere. The spectrum is also condensed, via a weighted average, into a measure of the overall pitch at each instant. The overall key of the song is statistically predicted based on the prevalences of each pitch-class found in the chromagram, as discussed in \url{http://ismir2004.ismir.net/proceedings/p018-page-92-paper164.pdf}. 
+From this initial data collection, more information about the song is gleaned. The frequency spectrum is truncated to a reasonable range and formatted as a displacement texture for the sphere. The spectrum is also condensed, via a weighted average, into a measure of the overall pitch at each instant. The overall key of the song is statistically predicted based on the prevalences of each pitch-class found in the chromagram, as discussed in \url{http://ismir2004.ismir.net/proceedings/p018-page-92-paper164.pdf}. From this key and the tempo, a base color value is chosen, corresponding to the mood of the entire piece.
 
 The final conclusions of the analysis are then formatted into a python dictionary for use in the graphics module.
 
@@ -113,20 +122,15 @@ in order to have the attack and decay of the beat appear as a pulse.
 
 The vertical positioning of the sphere is affected by the overall pitch as determined in \code{analysis.py}. As the average pitch grows higher in frequency, the sphere tends to move upwards, while lower pitches cause it to descend. The vertical motion of the sphere is modeled after a damped harmonic oscillator, where the equilibrium location changes depending on the average pitch frequency.
 
-color stuff
-
-We attempted to represent the mood of the input song with the color of the sphere. We were partly inspired from the synesthesia condition in taking this approach, in which signals from a particular sense (smell, sight etc.) may invoke perceptions in another sense. It also appears that people without synesthesia are also able to associate sounds with colors although not perceiving them (Tawny), so representing mood through color lies within our aim of creating a music visualizer that enhances the user’s listening experience.
-
-The greatest challenge this task posed us was finding out frequency patterns for particular moods, and we could not come up with a reasonable conclusion from the data we had gathered. We were, however, able to build a foundation on tempo and tonality, and approximate the target moods through a combination of these elements. The findings on the effect of tempo on mood are not consistent throughout the papers we have examined(Husain, 2002 and Tsang), thus we added a level of arbitration to represent moods through tempo to achieve parallelism with the moods considered in Bresin. We picked four moods among the ones mentioned in Bresin's table of colors: sadness, happiness, love and anger. None of the given moods had a significant correlation with saturation and value, except for anger which had an observed negative correlation with saturation - we decided not to implement this correlation due to aesthetic concerns. We did, however, correlate tempo and tonality with value according to the conclusions reached by Tsang and Bresin respectively.
-
-Tonality is determined by a composition of functions supplied by librosa - the overall amplitudes for each pitch are compared to reference values mentioned in Gómez. The current version of A-Sharp only supports detection of major and harmonic minor tonality, due to Gómez's analyses being based on classical pieces. Since songs may vary significantly from the aforementioned reference values, the algorithm we apply is by no means perfectly accurate, but it is always able to figure out the key of the song and the tonality with minimal deviation from the correct result in terms of fifths, given that the input song does not feature modulations.
-
-After the base color is determined through this process, the color is shifted with each update according to a combination of cosine functions, allowing it to remain within a reasonable interval of the color spectrum, not deviating greatly from the base color. We added this alteration phase in order to make our visualizer more appealing visually. The periods of the cosine functions are ideally synchronized with the beats of the song, however, librosa's beat tracking functions often pull in weaker beats into the process as well, leading to rapid changes in the period of the cosine function.
-
+The color of the sphere at a given moment is determined by the base color found in \code{analysis.py} as well as the position in the song. The rgb values of the sphere's color are shifted according to a sinusoidal function of the form
+$$\cos 2 \pi \left( \frac{1}{2} + \frac{\text{current time}}{32 \cdot \text{length of a beat}} \right)$$
+in order to achieve one full oscillation every 32 beats.
 
 The sphere's vertex displacement map is dynamically created from the frequency amplitudes at the current frame and is passed to the shader during runtime. The verticies along each of the latitudes of the sphere respond to the values from their corresponding frequency range, as given by the mapping from \code{analysis.py}. Latitudes higher on the sphere respind to higher frequencies, while rings lower down react to lower pitches.
 
 \section{Results}
+
+A$\sharp$
 
 Conclusion
 
@@ -134,13 +138,33 @@ fallbacks
 
 improvements
 
-\section{Bibliography}
+The tonality is determined by a composition of functions supplied by librosa - the overall amplitudes for each pitch are compared to reference values mentioned in Gómez. The current version of A-Sharp only supports detection of major and harmonic minor tonality, due to Gómez's analyses being based on classical pieces. Since songs may vary significantly from the aforementioned reference values, the algorithm we apply is by no means perfectly accurate, but it is always able to figure out the key of the song and the tonality with minimal deviation from the correct result in terms of fifths, given that the input song does not feature modulations.
 
-\begin{itemize}
-    \item Tsang, Tawny, and Karen B. Schloss. Associations between Color and Music Are Mediated by Emotion and Influenced by Tempo (n.d.): n. pag. University of California, Berkeley. Web. 12 Dec. 2014.
-    \item Gómez, Emilia, and Perfecto Herrera. "Estimating the Tonality of Polyphonic Audio Files: Cognitive Versus Machine Learning Modelling Strategies." (n.d.): n. pag. Web. 12 Dec. 2014.
-    \item Bresin, Roberto. "What Is the Color of That Music Performance?" KTH - Royal Institute of Technology, n.d. Web. 12 Dec. 2014.
-    \item Husain, Gabriela, William F. Thompson, and Glenn Schellenberg. "Effects of Musical Tempo and Mode on Arousal, Mood, and Spatial Abilities." University of Toronto, n.d. Web. 13 Dec. 2014.
-\end{itemize}
+After the base color is determined through this process, the color is shifted with each update according to a combination of cosine functions, allowing it to remain within a reasonable interval of the color spectrum, not deviating greatly from the base color. We added this alteration phase in order to make our visualizer more appealing visually. The periods of the cosine functions are ideally synchronized with the beats of the song, however, librosa's beat tracking functions often pull in weaker beats into the process as well, leading to rapid changes in the period of the cosine function.
+
+\begin{thebibliography}{9}
+
+\bibitem{bresin}
+    Bresin, Roberto.
+    ``What Is the Color of That Music Performance?''
+    KTH - Royal Institute of Technology, n.d. Web. 12 Dec. 2014.
+
+\bibitem{gomez}
+    G\'{o}mez, Emilia, and Perfecto Herrera.
+    ``Estimating the Tonality of Polyphonic Audio Files: Cognitive Versus Machine Learning Modelling Strategies.''
+    (n.d.): n. pag. Web. 12 Dec. 2014.
+
+\bibitem{husain}
+    Husain, Gabriela, William F. Thompson, and Glenn Schellenberg.
+    ``Effects of Musical Tempo and Mode on Arousal, Mood, and Spatial Abilities.''
+    University of Toronto, n.d. Web. 13 Dec. 2014.
+
+\bibitem{tsang}
+    Tsang, Tawny, and Karen B. Schloss.
+    \emph{Associations between Color and Music Are Mediated by Emotion and Influenced by Tempo.}
+    (n.d.): n. pag.
+    University of California, Berkeley. Web. 12 Dec. 2014.
+
+\end{thebibliography}
 
 \end{document}
