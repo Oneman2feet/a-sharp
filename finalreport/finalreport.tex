@@ -128,19 +128,19 @@ in order to achieve one full oscillation every 32 beats.
 
 The sphere's vertex displacement map is dynamically created from the frequency amplitudes at the current frame and is passed to the shader during runtime. The verticies along each of the latitudes of the sphere respond to the values from their corresponding frequency range, as given by the mapping from \code{analysis.py}. Latitudes higher on the sphere respind to higher frequencies, while rings lower down react to lower pitches.
 
+\section{Improvements}
+
+\begin{itemize}
+    \item The overall pitch for most songs stays in the middle of the range and rarely changes much, making the vertical movement of the sphere go largely unnoticed. A revised heuristic could ignore more frequency bands to focus more on following the melody, as well as emphasize changes more to allow for a larger range of motion.
+
+    \item Currently there exists only detection of major and harmonic minor tonality, due to G\'{o}mez's \cite{gomez} analyses being based on classical pieces. Since songs of other genres may vary significantly from the reference distribution of pitch-classes for classical music, the algorithm currently in use is by no means perfectly accurate, but it is always able to figure out the key of the song and the tonality with minimal deviation from the correct result along the circle of fifths, given that the input song does not feature modulations.
+
+    \item LibROSA's beat tracking function often accidentally identifies weaker beats as strong, which leads to unwanted rapid changes in color due to the way the period of color oscillation is currently calculated.
+\end{itemize}
+
 \section{Results}
 
-A$\sharp$
-
-Conclusion
-
-fallbacks
-
-improvements
-
-The tonality is determined by a composition of functions supplied by librosa - the overall amplitudes for each pitch are compared to reference values mentioned in Gómez. The current version of A-Sharp only supports detection of major and harmonic minor tonality, due to Gómez's analyses being based on classical pieces. Since songs may vary significantly from the aforementioned reference values, the algorithm we apply is by no means perfectly accurate, but it is always able to figure out the key of the song and the tonality with minimal deviation from the correct result in terms of fifths, given that the input song does not feature modulations.
-
-After the base color is determined through this process, the color is shifted with each update according to a combination of cosine functions, allowing it to remain within a reasonable interval of the color spectrum, not deviating greatly from the base color. We added this alteration phase in order to make our visualizer more appealing visually. The periods of the cosine functions are ideally synchronized with the beats of the song, however, librosa's beat tracking functions often pull in weaker beats into the process as well, leading to rapid changes in the period of the cosine function.
+A$\sharp$, as an initial attempt at a meaningful music visualizer, can be considered a success. There is much to be improved, but A$\sharp$'s foundation of intuitive visuals is strong. Hopefully A$\sharp$ will lead the way for other music visualizers to begin emphasizing meaningfulness over surface level appearance, and that eventually the sophistication of the analysis may allow for incredibly intricate detail that remains intuitive.
 
 \begin{thebibliography}{9}
 
