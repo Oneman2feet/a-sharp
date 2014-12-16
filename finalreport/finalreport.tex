@@ -116,8 +116,11 @@ The vertical positioning of the sphere is affected by the overall pitch as deter
 color stuff
 
 We attempted to represent the mood of the input song with the color of the sphere. We were partly inspired from the synesthesia condition in taking this approach, in which signals from a particular sense (smell, sight etc.) may invoke perceptions in another sense. It also appears that people without synesthesia are also able to associate sounds with colors although not perceiving them (Tawny), so representing mood through color lies within our aim of creating a music visualizer that enhances the user’s listening experience.
+
 The greatest challenge this task posed us was finding out frequency patterns for particular moods, and we could not come up with a reasonable conclusion from the data we had gathered. We were, however, able to build a foundation on tempo and tonality, and approximate the target moods through a combination of these elements. The findings on the effect of tempo on mood are not consistent throughout the papers we have examined(Husain, 2002 and Tsang), thus we added a level of arbitration to represent moods through tempo to achieve parallelism with the moods considered in Bresin. We picked four moods among the ones mentioned in Bresin's table of colors: sadness, happiness, love and anger. None of the given moods had a significant correlation with saturation and value, except for anger which had an observed negative correlation with saturation - we decided not to implement this correlation due to aesthetic concerns. We did, however, correlate tempo and tonality with value according to the conclusions reached by Tsang and Bresin respectively.
+
 Tonality is determined by a composition of functions supplied by librosa - the overall amplitudes for each pitch are compared to reference values mentioned in Gómez. The current version of A-Sharp only supports detection of major and harmonic minor tonality, due to Gómez's analyses being based on classical pieces. Since songs may vary significantly from the aforementioned reference values, the algorithm we apply is by no means perfectly accurate, but it is always able to figure out the key of the song and the tonality with minimal deviation from the correct result in terms of fifths, given that the input song does not feature modulations.
+
 After the base color is determined through this process, the color is shifted with each update according to a combination of cosine functions, allowing it to remain within a reasonable interval of the color spectrum, not deviating greatly from the base color. We added this alteration phase in order to make our visualizer more appealing visually. The periods of the cosine functions are ideally synchronized with the beats of the song, however, librosa's beat tracking functions often pull in weaker beats into the process as well, leading to rapid changes in the period of the cosine function.
 
 
@@ -130,5 +133,14 @@ Conclusion
 fallbacks
 
 improvements
+
+\section{Bibliography}
+
+\begin{itemize}
+    \item Tsang, Tawny, and Karen B. Schloss. Associations between Color and Music Are Mediated by Emotion and Influenced by Tempo (n.d.): n. pag. University of California, Berkeley. Web. 12 Dec. 2014.
+    \item Gómez, Emilia, and Perfecto Herrera. "Estimating the Tonality of Polyphonic Audio Files: Cognitive Versus Machine Learning Modelling Strategies." (n.d.): n. pag. Web. 12 Dec. 2014.
+    \item Bresin, Roberto. "What Is the Color of That Music Performance?" KTH - Royal Institute of Technology, n.d. Web. 12 Dec. 2014.
+    \item Husain, Gabriela, William F. Thompson, and Glenn Schellenberg. "Effects of Musical Tempo and Mode on Arousal, Mood, and Spatial Abilities." University of Toronto, n.d. Web. 13 Dec. 2014.
+\end{itemize}
 
 \end{document}
