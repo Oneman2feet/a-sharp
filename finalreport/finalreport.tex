@@ -85,19 +85,19 @@ In order to achieve an intuitive representation of the chosen song, the conceptu
 
 Sound analysis takes place as a pre-processing stage, before the visualization is run. The sound data is collected in the module \code{analysis.py}. Much of the waveform analysis is done with the help of the audio and music processing library \href{https://github.com/bmcfee/librosa/}{LibROSA}.
 
-The data we receive from this includes separated harmonic and percussive sounds, a melspectrogram (frequency amplitudes), tempo, beats, frame times, and a chromagram (???). All of these data sets are compiled for each frame in the song. Finally we perform operations to condense this data in order to make use of it in our graphics module (probably want more info here or in implementation section).
+The data received from LibROSA includes:
 
-tonic
-major/minor
-statistical analysis
+\begin{itemize}
+    \item The uncompressed waveform
+    \item Separated harmonic and percussive waveforms
+    \item Beat frames (list of time frames for which a beat event occurs)
+    \item Mel Spectrogram (amplitude of each frequency bin over time)
+    \item Chromagram (amplitude of each pitch-class over time)
+\end{itemize}
 
-separate foreground and background
-beat tracking and tempo
+From this initial data collection, more information about the song is gleaned. The frequency spectrum is truncated to a reasonable range and formatted as a displacement texture for the sphere. The spectrum is also condensed, via a weighted average, into a measure of the overall pitch at each instant. The overall key of the song is statistically predicted based on the prevalences of each pitch-class found in the chromagram, as discussed in \url{http://ismir2004.ismir.net/proceedings/p018-page-92-paper164.pdf}. 
 
-mel spectogram
-
-average pitch as a weighted average
-
+The final conclusions of the analysis are then formatted into a python dictionary for use in the graphics module.
 
 \section{Graphics Implementation}
 
