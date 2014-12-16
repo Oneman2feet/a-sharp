@@ -75,12 +75,18 @@ The source code for this project, as well as any extensions to it, can be found 
 In order to achieve an intuitive representation of the chosen song, the conceptual mapping of A$\sharp$'s visuals was designed with great care, as follows:
 
 \begin{itemize}
-    \item Overall volume determines object size
-    \item Beats are shown as pulses in object size
-    \item Overall pitch controlls object elevation (higher up means higher pitch)
-    \item Sound complexity (distribution of frequencies) determines object shape
-    \item Mood is conveyed by the color of the object
+    \item Overall volume determines sphere size
+    \item Beats are shown as pulses in sphere size
+    \item Overall pitch controlls sphere elevation (higher up means higher pitch)
+    \item Sound complexity (distribution of frequencies) determines sphere distortion
+    \item Mood is conveyed by the color of the sphere
 \end{itemize}
+
+\subsection{Sound Complexity}
+
+Arguably the most important component in song identification is the melodic contour (i.e. the shape of the melody). Rather than abstracting away the frequencies in a given musical piece, we found that the simplest and most relevant way to display melodic contour was to display the frequency distribution directly.
+
+This was accomplished by mapping each latitudinal band of vertices on the sphere mesh to a ``frequency bin'', or a group of similar frequencies. Each band is then distended from the sphere based on the power (log amplitude) of its resective bin at that time frame. This gives the desired illusion of the bands following the melodic contour of the song as it's being played, allowing individual melodies to be picked out by the user.
 
 \subsection{Mood}
 
@@ -104,7 +110,7 @@ The data received from LibROSA includes:
     \item Chromagram (amplitude of each pitch-class over time)
 \end{itemize}
 
-From this initial data collection, more information about the song is gleaned. The frequency spectrum is truncated to a reasonable range and formatted as a displacement texture for the sphere. The spectrum is also condensed, via a weighted average, into a measure of the overall pitch at each instant. The overall key of the song is statistically predicted based on the prevalences of each pitch-class found in the chromagram, as discussed in \url{http://ismir2004.ismir.net/proceedings/p018-page-92-paper164.pdf}. From this key and the tempo, a base color value is chosen, corresponding to the mood of the entire piece.
+From this initial data collection, more information about the song is gleaned. The frequency spectrum is truncated to an audible range. The spectrum is also condensed, via a weighted average, into a measure of the overall pitch at each instant. The overall key of the song is statistically predicted based on the prevalences of each pitch-class found in the chromagram, as discussed in \url{http://ismir2004.ismir.net/proceedings/p018-page-92-paper164.pdf}. From this key and the tempo, a base color value is chosen, corresponding to the mood of the entire piece.
 
 The final conclusions of the analysis are then formatted into a python dictionary for use in the graphics module.
 
@@ -114,19 +120,23 @@ The results from \code{analysis.py} are recieved by the module \code{graphics.py
 
 The graphics module uses vertex and fragment shaders to set the sphere mesh's positional and color data. After initialization of the window and global variables and constants, the update function is scheduled to be called regularly by the Pyglet app. At each frame, the sphere's radius, position, color, and displacement map are calculated according to the current sound data. This information is passed into the shaders, \code{DispMapped.vert} and \code{DispMapped.frag}, which update the appearance of the sphere on screen.
 
-The radius of the sphere is calculated as a sum of contributions
-$$\text{radius} = \text{minimum radius} + \text{current volume} + \text{proximity to beat}$$
-Where the proximity to the nearest beat is expressed as
-$$\left( \frac{\text{time between beats}}{2} - \text{time since previous beat} \right)^2$$
-in order to have the attack and decay of the beat appear as a pulse.
+    \subsection{Volume and Beats}
+    The radius of the sphere is calculated as a sum of contributions
+    $$\text{radius} = \text{minimum radius} + \text{current volume} + \text{proximity to beat}$$
+    Where the proximity to the nearest beat is expressed as
+    $$\left( \frac{\text{time between beats}}{2} - \text{time since previous beat} \right)^2$$
+    in order to have the attack and decay of the beat appear as a pulse.
 
-The vertical positioning of the sphere is affected by the overall pitch as determined in \code{analysis.py}. As the average pitch grows higher in frequency, the sphere tends to move upwards, while lower pitches cause it to descend. The vertical motion of the sphere is modeled after a damped harmonic oscillator, where the equilibrium location changes depending on the average pitch frequency.
+    \subsection{Frequency Analysis}
+    At each frame, we programmatically generate a new displacement map for our sphere. The map distends each latitudinal band of the sphere based on the power of its respective frequency bin, as explained in section 2.1
 
-The color of the sphere at a given moment is determined by the base color found in \code{analysis.py} as well as the position in the song. The rgb values of the sphere's color are shifted according to a sinusoidal function of the form
-$$\cos 2 \pi \left( \frac{1}{2} + \frac{\text{current time}}{32 \cdot \text{length of a beat}} \right)$$
-in order to achieve one full oscillation every 32 beats.
+    \subsection{Average Pitch}
+    The vertical positioning of the sphere is affected by the overall pitch as determined in \code{analysis.py}. As the average pitch grows higher in frequency, the sphere tends to move upwards, while lower pitches cause it to descend. The vertical motion of the sphere is modeled after a damped harmonic oscillator, where the equilibrium location changes depending on the average pitch frequency.
 
-The sphere's vertex displacement map is dynamically created from the frequency amplitudes at the current frame and is passed to the shader during runtime. The verticies along each of the latitudes of the sphere respond to the values from their corresponding frequency range, as given by the mapping from \code{analysis.py}. Latitudes higher on the sphere respind to higher frequencies, while rings lower down react to lower pitches.
+    \subsection{Mood}
+    The color of the sphere at a given moment is determined by the base color found in \code{analysis.py} as well as the position in the song. The rgb values of the sphere's color are shifted according to a sinusoidal function of the form
+    $$\cos 2 \pi \left( \frac{1}{2} + \frac{\text{current time}}{32 \cdot \text{length of a beat}} \right)$$
+    in order to achieve one full oscillation every 32 beats.
 
 \section{Results}
 
