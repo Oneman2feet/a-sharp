@@ -73,14 +73,15 @@ def mood_finder(isMajor, tempo):
     tempo2 = -60.0 if tempo < 40.0 else (90.0 if tempo > 190.0 else tempo - 100.0)
     value += tempo2 / 300.0
     tempo2 += 60.0
-    red = tempo2 / 150.0
-    red = red ** 2 if red < 0.5 else 1 - ((1 - red) ** 2)
-    green = 0 if not isMajor else red
-    if red > 0.999:
-        red = 0.999
+    red_temp = tempo2 / 150.0
+    red_temp = red_temp ** 2 if red_temp < 0.5 else 1 - ((1 - red_temp) ** 2)
+    green = 0 if not isMajor else red_temp
+    if red_temp > 0.999:
+        red_temp = 0.999
     else:
         green += 0.001
-    blue = 1.0 - red
+    blue = 1.0 - red_temp
+    red = 1.0 if isMajor else red_temp
     return red * value, green * value, blue * value
 
 
