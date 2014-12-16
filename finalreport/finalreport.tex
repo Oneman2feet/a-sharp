@@ -101,9 +101,21 @@ The final conclusions of the analysis are then formatted into a python dictionar
 
 \section{Graphics Implementation}
 
-The results of the analysis of the song from \code{analysis.py} are recieved by the module \code{graphics.py}. This module controls playback of the visualization using the windowing and multimedia library \href{http://www.pyglet.org/}{Pyglet}.
+The results from \code{analysis.py} are recieved by the module \code{graphics.py}. This module controls playback of the visualization with the help of the windowing and multimedia library \href{http://www.pyglet.org/}{Pyglet}.
 
-For our graphics pipeline, we wrote vertex and fragment shaders for our sphere to set positional and color data. After receiving data for each frame from the sound analysis, we set the radius of the sphere according to beat pulse and sound amplitude. Then, we use frequency data to compute vertical translations of the sphere. The idea behind this is to create an upward movement of the sphere when the pitch rises and a downward movement when pitch falls. We model this vertical motion of the sphere using a damped harmonic oscillator. 
+The graphics module uses vertex and fragment shaders to set the sphere mesh's positional and color data. After initialization of the window and global variables and constants, the update function is scheduled to be called regularly by the Pyglet app. At each frame, the sphere's radius, position, color, and displacement map are calculated according to the current sound data. This information is passed into the shaders, \code{DispMapped.vert} and \code{DispMapped.frag}, which update the appearance of the sphere on screen.
+
+The radius of the sphere is calculated as a sum of contributions
+$$\text{radius} = \text{minimum radius} + \text{current volume} + \text{proximity to beat}$$
+Where the proximity to the nearest beat is expressed as
+$$\left( \frac{\text{time between beats}}{2} - \text{time since previous beat} \right)^2$$
+in order to have the attack and decay of the beat appear as a pulse.
+
+The vertical positioning of the sphere is affected by the overall pitch as determined in \code{analysis.py}.
+
+blahblah
+
+Then, we use frequency data to compute vertical translations of the sphere. The idea behind this is to create an upward movement of the sphere when the pitch rises and a downward movement when pitch falls. We model this vertical motion of the sphere using a damped harmonic oscillator. 
 
 We also use frequency amplitude data to set displacement magnitudes. We dynamically create a texture map using this data at each frame. Essentially, the objective here is to displace higher points on the sphere according to the amplitudes of high frequencies, and lower points on the sphere according to the amplitudes of low frequencies. Finally we set shader uniforms based on the computed radius and texture map at each frame.
 
@@ -114,8 +126,6 @@ displacement mapping
 contributions to radius
 
 color cosine function for color scheme, synced with beats
-
-After initialization of the window and global variables and constants, the update function is scheduled to be called regularly by the Pyglet app. At each frame, the sphere's position, radius, color, and displacement map are calculated according to the current sound data. This information is passed into the shaders, \code{DispMapped.vert} and \code{DispMapped.frag}, which update the appearance of the sphere on screen.
 
 \section{Results}
 
