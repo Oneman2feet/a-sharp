@@ -62,12 +62,47 @@ Joseph \textsc{Vinegrad} \\
 
 \section{Summary}
 
-Our group worked on a music visualizer called A$\sharp$ (A Sharp). While typical visualizers have nice intricate displays, we feel that they do not meet the standards of a music visualizer in the true sense of the term. Our visualizer attemps to create a more accurate representation of the actual features of a song.
+A$\sharp$ (A Sharp) is a music visualizer designed for meaningful sound information conveyance. While other visualizers have flashy and intricate animations that pleasantly accompany the music, they do not successfully convey, interperet, or even begin to replace the music. This is an enormous shortcoming of music visualizers --- current applications certainly do not meet the standards of a music visualizer in the true sense of the term. A$\sharp$ attemps to make strides toward filling that gap, with hopes that other visualizers may follow suit.
 
-The visualizer models a song using a single sphere. We animate this sphere through sets of transformations based on data analysis from a song. In particular, our application analyzes features of a song, inlcluding beats and frequency amplitudes. Then, we use beats and overall amplitude to alter the sphere radius and frequency amplitudes to perform displacements on the surface of the sphere. We are also in the early stages of applying vertical translations based on changes in frequency, as well as choosing color based on the mood of a song.
+A$\sharp$ models a song using a single sphere mesh. The sphere is animated through sets of transformations based on comprehensive data analysis of the song's sound file. The application analyzes several important features of a song, including the overall key, beat event times, and the frequency amplitude spectrum at each instant of the song. The results of the song analysis determines the appearance of the sphere during the playback animation.
+
+\section{Conceptual Mapping}
+
+In order to achieve an intuitive representation of the chosen song, the conceptual mapping of A$\sharp$'s visuals was designed with great care, as follows:
+
+\begin{itemize}
+    \item Overall volume determines object size
+    \item Beats are shown by pulses in object size
+    \item Overall pitch controlls object elevation (higher up means higher pitch)
+    \item Sound complexity (distribution of frequencies) determines object shape
+    \item Mood is conveyed with color
+\end{itemize}
+
+Then, we use beats and overall amplitude to alter the sphere radius and frequency amplitudes to perform displacements on the surface of the sphere. We are also in the early stages of applying vertical translations based on changes in frequency, as well as choosing color based on the mood of a song.
+
+\section{Sound Analysis}
+
+tonic
+major/minor
+statistical analysis
+
+separate foreground and background
+beat tracking and tempo
+
+mel spectogram
+
+average pitch as a weighted average
 
 
-\section{Implementation}
+\section{Graphics Implementation}
+
+physically based animation spring model
+
+displacement mapping
+
+contributions to radius
+
+color cosine function for color scheme, synced with beats
 
 For our graphics pipeline, we wrote vertex and fragment shaders for our sphere to set positional and color data. After receiving data for each frame from the sound analysis, we set the radius of the sphere according to beat pulse and sound amplitude. Then, we use frequency data to compute vertical translations of the sphere. The idea behind this is to create an upward movement of the sphere when the pitch rises and a downward movement when pitch falls. We model this vertical motion of the sphere using a damped harmonic oscillator. 
 
@@ -85,5 +120,8 @@ Our codebase is divided into two main modules: (1) Sound analysis and (2) Graphi
 
 \end{enumerate}
 
+\section{Results}
+
+Conclusion
 
 \end{document}
