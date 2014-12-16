@@ -111,21 +111,13 @@ Where the proximity to the nearest beat is expressed as
 $$\left( \frac{\text{time between beats}}{2} - \text{time since previous beat} \right)^2$$
 in order to have the attack and decay of the beat appear as a pulse.
 
-The vertical positioning of the sphere is affected by the overall pitch as determined in \code{analysis.py}.
+The vertical positioning of the sphere is affected by the overall pitch as determined in \code{analysis.py}. As the average pitch grows higher in frequency, the sphere tends to move upwards, while lower pitches cause it to descend. The vertical motion of the sphere is modeled after a damped harmonic oscillator, where the equilibrium location changes depending on the average pitch frequency.
 
-blahblah
-
-Then, we use frequency data to compute vertical translations of the sphere. The idea behind this is to create an upward movement of the sphere when the pitch rises and a downward movement when pitch falls. We model this vertical motion of the sphere using a damped harmonic oscillator. 
-
-We also use frequency amplitude data to set displacement magnitudes. We dynamically create a texture map using this data at each frame. Essentially, the objective here is to displace higher points on the sphere according to the amplitudes of high frequencies, and lower points on the sphere according to the amplitudes of low frequencies. Finally we set shader uniforms based on the computed radius and texture map at each frame.
-
-physically based animation spring model
-
-displacement mapping
-
-contributions to radius
+color stuff
 
 color cosine function for color scheme, synced with beats
+
+We also use frequency amplitude data to set vertex displacement magnitudes. We dynamically create a texture map using this data at each frame. Essentially, the objective here is to displace higher points on the sphere according to the amplitudes of high frequencies, and lower points on the sphere according to the amplitudes of low frequencies. Finally we set shader uniforms based on the computed radius and texture map at each frame.
 
 \section{Results}
 
