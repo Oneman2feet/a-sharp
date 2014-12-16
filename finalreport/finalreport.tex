@@ -117,7 +117,7 @@ color stuff
 
 color cosine function for color scheme, synced with beats
 
-We also use frequency amplitude data to set vertex displacement magnitudes. We dynamically create a texture map using this data at each frame. Essentially, the objective here is to displace higher points on the sphere according to the amplitudes of high frequencies, and lower points on the sphere according to the amplitudes of low frequencies. Finally we set shader uniforms based on the computed radius and texture map at each frame.
+The sphere's vertex displacement map is dynamically created from the frequency amplitudes at the current frame and is passed to the shader during runtime. The verticies along each of the latitudes of the sphere respond to the values from their corresponding frequency range, as given by the mapping from \code{analysis.py}. Latitudes higher on the sphere respind to higher frequencies, while rings lower down react to lower pitches.
 
 \section{Results}
 
