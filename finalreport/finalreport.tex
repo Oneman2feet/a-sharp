@@ -143,7 +143,7 @@ The graphics module uses vertex and fragment shaders to set the sphere mesh's po
 \begin{itemize}
     \item The overall pitch for most songs stays in the middle of the range and rarely changes much, making the vertical movement of the sphere go largely unnoticed. A revised heuristic could ignore more frequency bands to focus more on following the melody, as well as emphasize changes more to allow for a larger range of motion.
 
-    \item Currently there exists only detection of major and harmonic minor tonality, due to G\'{o}mez's \cite{gomez} analyses being based on classical pieces. Since songs of other genres may vary significantly from the reference distribution of pitch-classes for classical music, the algorithm currently in use is by no means perfectly accurate, but it is always able to figure out the key of the song and the tonality with minimal deviation from the correct result along the circle of fifths, given that the input song does not feature modulations.
+    \item Currently there exists only detection of major and harmonic/melodic minor tonality, due to G\'{o}mez's \cite{gomez} analyses being based on classical pieces. Since songs of other genres may vary significantly from the reference distribution of pitch-classes for classical music, the algorithm currently in use is by no means perfectly accurate, but it is always able to figure out the key of the song and the tonality with minimal deviation from the correct result along the circle of fifths, given that the input song does not feature modulations.
 
     \item LibROSA's beat tracking function often accidentally identifies weaker beats as strong, which leads to unwanted rapid changes in color due to the way the period of color oscillation is currently calculated.
 \end{itemize}
