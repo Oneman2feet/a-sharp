@@ -5,6 +5,7 @@
 \usepackage{parskip}
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\code}{\texttt}
 
 \begin{document}
 
@@ -68,7 +69,21 @@ The visualizer models a song using a single sphere. We animate this sphere throu
 
 \section{Implementation}
 
-For our graphics pipeline, we wrote vertex and fragment shaders for our sphere to set positional and color data. After receiving data for each frame from the sound analysis, we set the radius of the sphere according to beat pulse and sound amplitude. Then, we use frequency amplitude data to set displacement magnitudes. We dynamically create a texture map using this data at each frame. Essentially, the objective here is to displace higher points on the sphere according to the amplitudes of high frequencies, and lower points on the sphere according to the amplitudes of low frequencies. Finally we set shader uniforms based on the computed radius and texture map at each frame.
+For our graphics pipeline, we wrote vertex and fragment shaders for our sphere to set positional and color data. After receiving data for each frame from the sound analysis, we set the radius of the sphere according to beat pulse and sound amplitude. Then, we use frequency data to compute vertical translations of the sphere. The idea behind this is to create an upward movement of the sphere when the pitch rises and a downward movement when pitch falls. We model this vertical motion of the sphere using a damped harmonic oscillator. 
+
+We also use frequency amplitude data to set displacement magnitudes. We dynamically create a texture map using this data at each frame. Essentially, the objective here is to displace higher points on the sphere according to the amplitudes of high frequencies, and lower points on the sphere according to the amplitudes of low frequencies. Finally we set shader uniforms based on the computed radius and texture map at each frame.
+
+
+\section{Software Design}
+Our codebase is divided into two main modules: (1) Sound analysis and (2) Graphics. 
+
+\begin{enumerate}[(1)]
+
+\item  Sound analysis takes place as a pre-processing stage, before we display any graphics. We obtain data for the sound analysis in \code{app/analysis.py}. We utilize an audio and music processing library called librosa to do the bulk of the work in obtaining the data. The data we receive from this includes separated harmonic and percussive sounds, a melspectrogram (frequency amplitudes), tempo, beats, frame times, and a chromagram (???). All of these data sets are compiled for each frame in the song. Finally we perform operations to condense this data in order to make use of it in our graphics module (probably want more info here or in implementation section).
+
+\item Once we receive the sound data from analysis.py, we pass them along to our graphics module in \code{app/graphics.py}. First we setup our screen and initialize constants and data structures based on the sound data. At each frame, we update features of the sphere, including radius, color, vertical positon, and displacement map. This information is passed into the shaders, \code{DispMapped.vert} and \code{DispMapped.frag}, which update the appearance of the sphere on screen. 
+
+\end{enumerate}
 
 
 \end{document}
